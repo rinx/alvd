@@ -17,8 +17,10 @@ type Opts struct {
 	DistanceType string
 	ObjectType   string
 	RESTEnabled  bool
+	RESTHost     string
 	RESTPort     uint
 	GRPCEnabled  bool
+	GRPCHost     string
 	GRPCPort     uint
 }
 
@@ -48,6 +50,11 @@ var Flags = []cli.Flag{
 		Value: false,
 		Usage: "rest server enabled",
 	},
+	&cli.StringFlag{
+		Name:  "rest-host",
+		Value: "0.0.0.0",
+		Usage: "rest server host",
+	},
 	&cli.UintFlag{
 		Name:  "rest-port",
 		Value: 8080,
@@ -57,6 +64,11 @@ var Flags = []cli.Flag{
 		Name:  "grpc",
 		Value: true,
 		Usage: "grpc server enabled",
+	},
+	&cli.StringFlag{
+		Name:  "grpc-host",
+		Value: "0.0.0.0",
+		Usage: "grpc server host",
 	},
 	&cli.UintFlag{
 		Name:  "grpc-port",
@@ -72,8 +84,10 @@ func ParseOpts(c *cli.Context) *Opts {
 		DistanceType: c.String("distance-type"),
 		ObjectType:   c.String("object-type"),
 		RESTEnabled:  c.Bool("rest"),
+		RESTHost:     c.String("rest-host"),
 		RESTPort:     c.Uint("rest-port"),
 		GRPCEnabled:  c.Bool("grpc"),
+		GRPCHost:     c.String("grpc-host"),
 		GRPCPort:     c.Uint("grpc-port"),
 	}
 }
@@ -98,8 +112,8 @@ func Run(opts *Opts) error {
 		config.WithDimension(opts.Dimension),
 		config.WithDistanceType(opts.DistanceType),
 		config.WithObjectType(opts.ObjectType),
-		config.WithRESTServer(opts.RESTEnabled, opts.RESTPort),
-		config.WithGRPCServer(opts.GRPCEnabled, opts.GRPCPort),
+		config.WithRESTServer(opts.RESTEnabled, opts.RESTHost, opts.RESTPort),
+		config.WithGRPCServer(opts.GRPCEnabled, opts.GRPCHost, opts.GRPCPort),
 	)
 	if err != nil {
 		return err

@@ -36,14 +36,14 @@ func WithObjectType(ot string) OptionFunc {
 	}
 }
 
-func WithRESTServer(enable bool, port uint) OptionFunc {
+func WithRESTServer(enable bool, host string, port uint) OptionFunc {
 	return func(c *Config) error {
 		if enable {
 			c.NGTConfig.Server.Servers = append(
 				c.NGTConfig.Server.Servers,
 				&valdconfig.Server{
 					Name: "rest",
-					Host: "0.0.0.0",
+					Host: host,
 					Port: port,
 					Mode: "REST",
 				},
@@ -54,14 +54,14 @@ func WithRESTServer(enable bool, port uint) OptionFunc {
 	}
 }
 
-func WithGRPCServer(enable bool, port uint) OptionFunc {
+func WithGRPCServer(enable bool, host string, port uint) OptionFunc {
 	return func(c *Config) error {
 		if enable {
 			c.NGTConfig.Server.Servers = append(
 				c.NGTConfig.Server.Servers,
 				&valdconfig.Server{
 					Name: "grpc",
-					Host: "0.0.0.0",
+					Host: host,
 					Port: port,
 					Mode: "GRPC",
 				},
