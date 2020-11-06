@@ -48,7 +48,10 @@ func Run(opts *Opts) error {
 
 	log.Info("start alvd server")
 
-	cfg, err := config.New()
+	cfg, err := config.New(
+		config.WithAgentEnabled(opts.AgentEnabled),
+		config.WithAddr(opts.ServerAddress),
+	)
 	if err != nil {
 		return err
 	}

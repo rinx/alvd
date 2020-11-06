@@ -50,6 +50,7 @@ require (
 	github.com/kpango/fastime v1.0.16
 	github.com/kpango/gache v1.2.3
 	github.com/kpango/glg v1.5.1
+	github.com/rancher/remotedialer v0.2.5
 	github.com/scylladb/gocqlx v1.5.0
 	github.com/urfave/cli/v2 v2.2.0
 	github.com/vdaas/vald v0.0.62

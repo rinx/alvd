@@ -6,6 +6,16 @@ import (
 
 type OptionFunc func(c *Config) error
 
+func WithServerAddress(addr string) OptionFunc {
+	return func(c *Config) error {
+		if addr != "" {
+			c.ServerAddress = addr
+		}
+
+		return nil
+	}
+}
+
 func WithDimension(dimension int) OptionFunc {
 	return func(c *Config) error {
 		if dimension > 2 {

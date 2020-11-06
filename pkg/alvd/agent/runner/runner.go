@@ -5,6 +5,7 @@ import (
 
 	valdrunner "github.com/rinx/alvd/internal/runner"
 	"github.com/rinx/alvd/pkg/alvd/agent/config"
+	"github.com/rinx/alvd/pkg/alvd/agent/tunnel"
 	"github.com/rinx/alvd/pkg/vald/agent/ngt/usecase"
 )
 
@@ -31,6 +32,9 @@ func (r *runner) Start(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
+	tun := tunnel.Connect(ctx, r.cfg.ServerAddress)
+	defer tun.Close()
 
 	return valdrunner.Run(ctx, vr, "alvd-agent")
 }

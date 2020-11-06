@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"github.com/rancher/remotedialer"
+	"github.com/rinx/alvd/internal/log"
 )
 
 type tunnel struct {
@@ -21,14 +22,28 @@ func Connect(ctx context.Context, address string) Tunnel {
 	ctx, cancel := context.WithCancel(ctx)
 
 	if address != "" {
-		remotedialer.ClientConnect(
-			ctx,
-			fmt.Sprintf("ws://%s/connect", address),
-			nil,
-			nil,
-			connectAuthorizer,
-			onConnect,
-		)
+		go func() {
+			for {
+				remotedialer.ClientConnect(
+					ctx,
+					fmt.Sprintf("ws://%s/connect", address),
+					nil,
+					nil,
+					connectAuthorizer,
+					onConnectFunc(address),
+				)
+
+				select {
+				case <-ctx.Done():
+					err := ctx.Err()
+					if err != nil {
+						log.Errorf("%s", err)
+						return
+					}
+				default:
+				}
+			}
+		}()
 	}
 
 	return &tunnel{
@@ -46,6 +61,9 @@ func connectAuthorizer(proto, address string) bool {
 	return err == nil && proto == "tcp" && host == "127.0.0.1"
 }
 
-func onConnect(ctx context.Context) error {
-	return nil
+func onConnectFunc(address string) func(ctx context.Context) error {
+	return func(ctx context.Context) error {
+		log.Infof("connected to: %s", address)
+		return nil
+	}
 }

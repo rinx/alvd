@@ -12,19 +12,25 @@ import (
 )
 
 type Opts struct {
-	LogLevel     string
-	Dimension    int
-	DistanceType string
-	ObjectType   string
-	RESTEnabled  bool
-	RESTHost     string
-	RESTPort     uint
-	GRPCEnabled  bool
-	GRPCHost     string
-	GRPCPort     uint
+	ServerAddress string
+	LogLevel      string
+	Dimension     int
+	DistanceType  string
+	ObjectType    string
+	RESTEnabled   bool
+	RESTHost      string
+	RESTPort      uint
+	GRPCEnabled   bool
+	GRPCHost      string
+	GRPCPort      uint
 }
 
 var Flags = []cli.Flag{
+	&cli.StringFlag{
+		Name:  "server",
+		Value: "0.0.0.0:8000",
+		Usage: "server address",
+	},
 	&cli.StringFlag{
 		Name:  "log-level",
 		Value: "info",
@@ -79,16 +85,17 @@ var Flags = []cli.Flag{
 
 func ParseOpts(c *cli.Context) *Opts {
 	return &Opts{
-		LogLevel:     c.String("log-level"),
-		Dimension:    c.Int("dimension"),
-		DistanceType: c.String("distance-type"),
-		ObjectType:   c.String("object-type"),
-		RESTEnabled:  c.Bool("rest"),
-		RESTHost:     c.String("rest-host"),
-		RESTPort:     c.Uint("rest-port"),
-		GRPCEnabled:  c.Bool("grpc"),
-		GRPCHost:     c.String("grpc-host"),
-		GRPCPort:     c.Uint("grpc-port"),
+		ServerAddress: c.String("server"),
+		LogLevel:      c.String("log-level"),
+		Dimension:     c.Int("dimension"),
+		DistanceType:  c.String("distance-type"),
+		ObjectType:    c.String("object-type"),
+		RESTEnabled:   c.Bool("rest"),
+		RESTHost:      c.String("rest-host"),
+		RESTPort:      c.Uint("rest-port"),
+		GRPCEnabled:   c.Bool("grpc"),
+		GRPCHost:      c.String("grpc-host"),
+		GRPCPort:      c.Uint("grpc-port"),
 	}
 }
 
@@ -109,6 +116,7 @@ func Run(opts *Opts) error {
 	log.Info("start alvd agent")
 
 	cfg, err := config.New(
+		config.WithServerAddress(opts.ServerAddress),
 		config.WithDimension(opts.Dimension),
 		config.WithDistanceType(opts.DistanceType),
 		config.WithObjectType(opts.ObjectType),

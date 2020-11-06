@@ -7,6 +7,8 @@ import (
 )
 
 type Config struct {
+	ServerAddress string
+
 	NGTConfig *ngt.Data
 }
 
