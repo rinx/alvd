@@ -5,37 +5,46 @@ import (
 
 	"github.com/rinx/alvd/internal/log"
 	"github.com/rinx/alvd/internal/log/level"
+	"github.com/rinx/alvd/pkg/alvd/cli/agent"
 	"github.com/rinx/alvd/pkg/alvd/server/config"
 	"github.com/rinx/alvd/pkg/alvd/server/runner"
 
 	cli "github.com/urfave/cli/v2"
 )
 
-type opts struct {
-	logLevel string
+type Opts struct {
+	AgentEnabled bool
+	*agent.Opts
+}
+
+var Flags = []cli.Flag{
+	&cli.BoolFlag{
+		Name:  "agent",
+		Value: true,
+		Usage: "agent enabled",
+	},
+}
+
+func ParseOpts(c *cli.Context) *Opts {
+	return &Opts{
+		AgentEnabled: c.Bool("agent"),
+		Opts:         agent.ParseOpts(c),
+	}
 }
 
 func NewCommand() *cli.Command {
 	return &cli.Command{
 		Name:  "server",
 		Usage: "Start server",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  "log-level",
-				Value: "info",
-				Usage: "log level",
-			},
-		},
+		Flags: append(Flags, agent.Flags...),
 		Action: func(c *cli.Context) error {
-			return Run(&opts{
-				logLevel: c.String("log-level"),
-			})
+			return Run(ParseOpts(c))
 		},
 	}
 }
 
-func Run(opts *opts) error {
-	log.Init(log.WithLevel(level.Atol(opts.logLevel).String()))
+func Run(opts *Opts) error {
+	log.Init(log.WithLevel(level.Atol(opts.LogLevel).String()))
 
 	log.Info("start alvd server")
 
