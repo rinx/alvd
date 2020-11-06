@@ -23,7 +23,7 @@ func Connect(ctx context.Context, address string) Tunnel {
 	if address != "" {
 		remotedialer.ClientConnect(
 			ctx,
-			fmt.Sprintf("wss://%s/connect", address),
+			fmt.Sprintf("ws://%s/connect", address),
 			nil,
 			nil,
 			connectAuthorizer,
