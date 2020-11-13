@@ -3,6 +3,8 @@ package manager
 import (
 	"context"
 	"fmt"
+	"sort"
+	"sync"
 	"time"
 
 	"github.com/rinx/alvd/internal/log"
@@ -17,18 +19,31 @@ type manager struct {
 	interval time.Duration
 
 	tunnel tunnel.Tunnel
+
+	clients []client
+	mu      sync.Mutex
+}
+
+type client struct {
+	key  string
+	port int
+	addr string
+
+	indexInfo *payload.Info_Index_Count
 }
 
 type Manager interface {
 	Start(ctx context.Context) <-chan error
 	Close() error
-	GetClient() (vald.Client, error)
+	GetClient(addr string) (vald.Client, error)
+	GetAgentClient(addr string) (core.AgentClient, error)
 }
 
 func New(tun tunnel.Tunnel) (Manager, error) {
 	return &manager{
 		interval: 5000 * time.Millisecond,
 		tunnel:   tun,
+		clients:  make([]client, 0),
 	}, nil
 }
 
@@ -42,23 +57,7 @@ func (m *manager) Start(ctx context.Context) <-chan error {
 		defer ticker.Stop()
 
 		for {
-			for key, port := range m.tunnel.Clients() {
-				log.Infof("id: %s, port: %d", key, port)
-
-				client, err := m.GetAgentClient(toAddr(key, port))
-				if err != nil {
-					ech <- err
-					continue
-				}
-
-				res, err := client.IndexInfo(ctx, &payload.Empty{})
-				if err != nil {
-					ech <- err
-					continue
-				}
-
-				log.Infof("%#v", res)
-			}
+			m.updateClientsList(ctx, ech)
 
 			select {
 			case <-ctx.Done():
@@ -91,8 +90,8 @@ func (m *manager) getConn(addr string) (*grpc.ClientConn, error) {
 	)
 }
 
-func (m *manager) GetClient() (vald.Client, error) {
-	conn, err := m.getConn("agent:8081")
+func (m *manager) GetClient(addr string) (vald.Client, error) {
+	conn, err := m.getConn(addr)
 	if err != nil {
 		return nil, err
 	}
@@ -107,4 +106,42 @@ func (m *manager) GetAgentClient(addr string) (core.AgentClient, error) {
 	}
 
 	return core.NewAgentClient(conn), nil
+}
+
+func (m *manager) updateClientsList(ctx context.Context, ech chan error) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	cmap := m.tunnel.Clients()
+
+	m.clients = make([]client, 0, len(cmap))
+
+	for key, port := range cmap {
+		addr := toAddr(key, port)
+
+		cli, err := m.GetAgentClient(addr)
+		if err != nil {
+			ech <- err
+			continue
+		}
+
+		idxInfo, err := cli.IndexInfo(ctx, &payload.Empty{})
+		if err != nil {
+			ech <- err
+			continue
+		}
+
+		m.clients = append(m.clients, client{
+			key:       key,
+			port:      port,
+			addr:      addr,
+			indexInfo: idxInfo,
+		})
+	}
+
+	sort.Slice(m.clients, func(i, j int) bool {
+		ix := m.clients[i].indexInfo.Stored + m.clients[i].indexInfo.Uncommitted
+		jx := m.clients[j].indexInfo.Stored + m.clients[j].indexInfo.Uncommitted
+		return ix < jx
+	})
 }

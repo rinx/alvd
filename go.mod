@@ -37,31 +37,44 @@ replace (
 
 require (
 	cloud.google.com/go v0.65.0
+	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
 	contrib.go.opencensus.io/exporter/jaeger v0.2.1
 	contrib.go.opencensus.io/exporter/prometheus v0.2.0
 	contrib.go.opencensus.io/exporter/stackdriver v0.13.4
+	github.com/aws/aws-sdk-go v1.23.20
 	github.com/cespare/xxhash/v2 v2.1.1
+	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-redis/redis/v7 v7.4.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gocql/gocql v0.0.0-20200131111108-92af2e088537
 	github.com/gocraft/dbr/v2 v2.7.0
+	github.com/gogo/protobuf v1.3.1
+	github.com/google/go-cmp v0.5.2
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/go-version v1.2.1
 	github.com/json-iterator/go v1.1.10
+	github.com/klauspost/compress v0.0.0-00010101000000-000000000000
 	github.com/kpango/fastime v1.0.16
 	github.com/kpango/fuid v0.0.0-20200823100533-287aa95e0641
 	github.com/kpango/gache v1.2.3
 	github.com/kpango/glg v1.5.1
+	github.com/pierrec/lz4/v3 v3.3.2
 	github.com/rancher/remotedialer v0.2.5
 	github.com/scylladb/gocqlx v1.5.0
+	github.com/tensorflow/tensorflow v0.0.0-00010101000000-000000000000
 	github.com/urfave/cli/v2 v2.2.0
 	github.com/vdaas/vald v0.0.62
-	github.com/vdaas/vald/apis v0.0.0-20191116110024-e4d8aeefc026
 	go.opencensus.io v0.22.5
 	go.uber.org/automaxprocs v1.3.0
+	go.uber.org/goleak v1.1.10
+	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
 	golang.org/x/sys v0.0.0-20201110211018-35f3e6cf4a65
 	google.golang.org/api v0.35.0
 	google.golang.org/grpc v1.33.2
 	gopkg.in/yaml.v2 v2.3.0
-	k8s.io/heapster v1.5.4
+	k8s.io/api v0.18.9
+	k8s.io/apimachinery v0.18.9
+	k8s.io/client-go v0.18.9
+	k8s.io/metrics v0.0.0-00010101000000-000000000000
+	sigs.k8s.io/controller-runtime v0.0.0-00010101000000-000000000000
 )

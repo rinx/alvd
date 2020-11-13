@@ -22,7 +22,7 @@ func (s *server) Exists(
 	ctx context.Context,
 	meta *payload.Object_ID,
 ) (id *payload.Object_ID, err error) {
-	client, err := s.manager.GetClient()
+	client, err := s.manager.GetClient("agent:8081")
 	if err != nil {
 		return nil, err
 	}
