@@ -5,7 +5,7 @@ import (
 
 	"github.com/rinx/alvd/internal/log"
 	"github.com/rinx/alvd/pkg/alvd/agent/config"
-	"github.com/rinx/alvd/pkg/alvd/agent/tunnel"
+	"github.com/rinx/alvd/pkg/alvd/agent/service/tunnel"
 )
 
 type daemon struct {

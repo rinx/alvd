@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rinx/alvd/internal/log"
 	"github.com/rinx/alvd/pkg/alvd/server/config"
-	"github.com/rinx/alvd/pkg/alvd/server/tunnel"
+	"github.com/rinx/alvd/pkg/alvd/server/service/tunnel"
 )
 
 type daemon struct {
