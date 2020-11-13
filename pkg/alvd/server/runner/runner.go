@@ -2,12 +2,13 @@ package runner
 
 import (
 	"context"
-	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/gorilla/mux"
 	"github.com/rinx/alvd/internal/log"
 	"github.com/rinx/alvd/pkg/alvd/server/config"
-	"github.com/rinx/alvd/pkg/alvd/server/tunnel"
+	"github.com/rinx/alvd/pkg/alvd/server/daemon"
 )
 
 type runner struct {
@@ -25,14 +26,29 @@ func New(cfg *config.Config) (Runner, error) {
 }
 
 func (r *runner) Start(ctx context.Context) error {
-	tun, err := tunnel.New()
+	sigCh := make(chan os.Signal, 1)
+	defer close(sigCh)
+
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	d, err := daemon.New(r.cfg)
 	if err != nil {
 		return err
 	}
 
-	router := mux.NewRouter()
-	router.Handle("/connect", tun.Handler())
+	ech := d.Start(ctx)
+	defer d.Close()
 
-	log.Infof("listen: %s", r.cfg.Addr)
-	return http.ListenAndServe(r.cfg.Addr, router)
+	for {
+		select {
+		case <-sigCh:
+			cancel()
+		case <-ctx.Done():
+			return nil
+		case err := <-ech:
+			log.Errorf("error: %s", err)
+		}
+	}
 }

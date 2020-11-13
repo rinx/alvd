@@ -23,6 +23,7 @@ replace (
 	github.com/hailocab/go-hostpool => github.com/monzo/go-hostpool v0.0.0-20200724120130-287edbb29340
 	github.com/klauspost/compress => github.com/klauspost/compress v1.11.1-0.20200908135004-a2bf5b1ec3aa
 	github.com/tensorflow/tensorflow => github.com/tensorflow/tensorflow v2.1.0+incompatible
+	github.com/vdaas/vald => ./vald
 	golang.org/x/crypto => golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 	google.golang.org/grpc => google.golang.org/grpc v1.32.0
 	google.golang.org/protobuf => google.golang.org/protobuf v1.25.0
@@ -56,8 +57,8 @@ require (
 	github.com/vdaas/vald v0.0.62
 	go.opencensus.io v0.22.5
 	go.uber.org/automaxprocs v1.3.0
-	golang.org/x/sys v0.0.0-20201029080932-201ba4db2418
-	google.golang.org/api v0.32.0
-	google.golang.org/grpc v1.31.1
+	golang.org/x/sys v0.0.0-20201110211018-35f3e6cf4a65
+	google.golang.org/api v0.35.0
+	google.golang.org/grpc v1.33.2
 	gopkg.in/yaml.v2 v2.3.0
 )

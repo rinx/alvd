@@ -18,38 +18,38 @@ type Tunnel interface {
 	Close()
 }
 
-func Connect(ctx context.Context, address string) Tunnel {
+func Connect(ctx context.Context, address string) (Tunnel, <-chan error) {
 	ctx, cancel := context.WithCancel(ctx)
+	ech := make(chan error, 1)
 
-	if address != "" {
-		go func() {
-			for {
-				remotedialer.ClientConnect(
-					ctx,
-					fmt.Sprintf("ws://%s/connect", address),
-					nil,
-					nil,
-					connectAuthorizer,
-					onConnectFunc(address),
-				)
+	go func() {
+		defer close(ech)
+		for {
+			remotedialer.ClientConnect(
+				ctx,
+				fmt.Sprintf("ws://%s/connect", address),
+				nil,
+				nil,
+				connectAuthorizer,
+				onConnectFunc(address),
+			)
 
-				select {
-				case <-ctx.Done():
-					err := ctx.Err()
-					if err != nil {
-						log.Errorf("%s", err)
-						return
-					}
-				default:
+			select {
+			case <-ctx.Done():
+				err := ctx.Err()
+				if err != nil {
+					log.Errorf("error: %s", err)
 				}
+				return
+			default:
 			}
-		}()
-	}
+		}
+	}()
 
 	return &tunnel{
 		address: address,
 		cancel:  cancel,
-	}
+	}, ech
 }
 
 func (t *tunnel) Close() {
