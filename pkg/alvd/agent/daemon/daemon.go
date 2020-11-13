@@ -11,6 +11,9 @@ import (
 type daemon struct {
 	serverAddress string
 
+	agentName string
+	agentPort uint
+
 	cancel context.CancelFunc
 
 	tunnel tunnel.Tunnel
@@ -25,6 +28,8 @@ func New(cfg *config.Config) (Daemon, error) {
 
 	return &daemon{
 		serverAddress: cfg.ServerAddress,
+		agentName:     cfg.AgentName,
+		agentPort:     cfg.AgentPort,
 	}, nil
 }
 
@@ -32,7 +37,11 @@ func (d *daemon) Start(ctx context.Context) error {
 	ctx, d.cancel = context.WithCancel(ctx)
 
 	var tunEch <-chan error
-	d.tunnel, tunEch = tunnel.Connect(ctx, d.serverAddress)
+	d.tunnel, tunEch = tunnel.Connect(ctx, &tunnel.Config{
+		ServerAddress: d.serverAddress,
+		AgentName:     d.agentName,
+		AgentPort:     d.agentPort,
+	})
 
 	go func() {
 		var err error

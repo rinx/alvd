@@ -4,34 +4,48 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"net/http"
+	"strconv"
 
 	"github.com/rancher/remotedialer"
 	"github.com/rinx/alvd/internal/log"
 )
 
 type tunnel struct {
-	address string
-	cancel  context.CancelFunc
+	*Config
+	cancel context.CancelFunc
+}
+
+type Config struct {
+	ServerAddress string
+
+	AgentName string
+	AgentPort uint
 }
 
 type Tunnel interface {
 	Close()
 }
 
-func Connect(ctx context.Context, address string) (Tunnel, <-chan error) {
+func Connect(ctx context.Context, cfg *Config) (Tunnel, <-chan error) {
 	ctx, cancel := context.WithCancel(ctx)
 	ech := make(chan error, 1)
+
+	headers := http.Header{
+		"X-ALVD-ID":        []string{cfg.AgentName},
+		"X-ALVD-GRPC-PORT": []string{strconv.Itoa(int(cfg.AgentPort))},
+	}
 
 	go func() {
 		defer close(ech)
 		for {
 			remotedialer.ClientConnect(
 				ctx,
-				fmt.Sprintf("ws://%s/connect", address),
-				nil,
+				fmt.Sprintf("ws://%s/connect", cfg.ServerAddress),
+				headers,
 				nil,
 				connectAuthorizer,
-				onConnectFunc(address),
+				onConnectFunc(cfg.ServerAddress),
 			)
 
 			select {
@@ -47,8 +61,8 @@ func Connect(ctx context.Context, address string) (Tunnel, <-chan error) {
 	}()
 
 	return &tunnel{
-		address: address,
-		cancel:  cancel,
+		Config: cfg,
+		cancel: cancel,
 	}, ech
 }
 

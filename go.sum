@@ -187,6 +187,7 @@ github.com/gocraft/dbr/v2 v2.7.0/go.mod h1:wQdbxPBSloo2OlSedMxfNW0mgk0GXys9O1VFm
 github.com/gogo/protobuf v1.3.1 h1:DqDEcV5aeaTmdFBePNpYsp3FlcVH/2ISVVM9Qf8PSls=
 github.com/gogo/protobuf v1.3.1/go.mod h1:SlYgWuQ5SjCEi6WLHjHCa1yvBfUnHcTbrrZtXPKa29o=
 github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0/go.mod h1:E/TSTwGwJL78qG/PmXZO1EjYhfJinVAhrmmHX6Z8B9k=
+github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b h1:VKtxabqXZkF25pY9ekfRL6a582T4P37/31XEstQ5p58=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b/go.mod h1:SBH7ygxi8pfUlaOkMMuAQtPIUF8ecWP5IEl/CR7VP2Q=
 github.com/golang/groupcache v0.0.0-20160516000752-02826c3e7903/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=
 github.com/golang/groupcache v0.0.0-20190129154638-5b532d6fd5ef/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=
@@ -273,6 +274,7 @@ github.com/kpango/fastime v1.0.8/go.mod h1:Y5XY5bLG5yc7g2XmMUzc22XYV1XaH+KgUOHkD
 github.com/kpango/fastime v1.0.9/go.mod h1:lVqUTcXmQnk1wriyvq5DElbRSRDC0XtqbXQRdz0Eo+g=
 github.com/kpango/fastime v1.0.16 h1:1prFG/3pTjzcDeCTxt98VB4IvjxcySLs0ldCEhZg0R8=
 github.com/kpango/fastime v1.0.16/go.mod h1:lVqUTcXmQnk1wriyvq5DElbRSRDC0XtqbXQRdz0Eo+g=
+github.com/kpango/fuid v0.0.0-20200823100533-287aa95e0641 h1:KJDBz1a/9AfYwqE+K1CM58jpT+F0aK8BY+Mc9lt4shU=
 github.com/kpango/fuid v0.0.0-20200823100533-287aa95e0641/go.mod h1:daBIyhkrFS6U/7vPRxeQ6pZWmqLKlwqJwsoPzei2YwU=
 github.com/kpango/gache v1.2.3 h1:ubXdhzgEALNwujqzsI0FwdoCGWce6AEtvqAxmf597jI=
 github.com/kpango/gache v1.2.3/go.mod h1:Nn2eMfM4Yq5M2QvUJ4Z6VeGEK5ZBFAzLOBGf/TKdVDM=
@@ -433,6 +435,7 @@ github.com/urfave/cli/v2 v2.2.0/go.mod h1:SE9GqnLQmjVa0iPEY0f1w3ygNIYcIJ0OKPMoW2
 github.com/vdaas/vald v0.0.62 h1:sLEmCAJSeA8fvXx8ofjgZ3YUd+mZQe/1aukXimVLSB4=
 github.com/vdaas/vald v0.0.62/go.mod h1:1PhN6Oo2D83ERpk+sO5AhbYPByVvD1vfaZb5Ruf2ezo=
 github.com/vdaas/vald/apis v0.0.0-20191116110024-e4d8aeefc026 h1:TMCf7bvoMfwvKcQAs9d9w3XsC1PKrc8tD5DRLZfUhaA=
+github.com/vdaas/vald/apis v0.0.0-20191116110024-e4d8aeefc026/go.mod h1:1JSLsYSP8btEoDweIEahMgpcAjijzqaKGI4Y5gzYyS4=
 github.com/vektah/gqlparser v1.1.2/go.mod h1:1ycwN7Ij5njmMkPPAOaRFY4rET2Enx7IkVv3vaXspKw=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77/go.mod h1:aYKd//L2LvnjZzWKhF00oedf4jCCReLcmhLdhm1A27Q=
@@ -701,6 +704,7 @@ google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55/go.mod h1:DMBHOl98
 google.golang.org/genproto v0.0.0-20190911173649-1774047e7e51/go.mod h1:IbNlFCBrqXvoKpeg0TB2l7cyZUmoaFKYIwrEpbDKLA8=
 google.golang.org/genproto v0.0.0-20191108220845-16a3f7862a1a/go.mod h1:n3cpQtvxv34hfy77yVDNjmbRyujviMdxYliBSkLhpCc=
 google.golang.org/genproto v0.0.0-20191115194625-c23dd37a84c9/go.mod h1:n3cpQtvxv34hfy77yVDNjmbRyujviMdxYliBSkLhpCc=
+google.golang.org/genproto v0.0.0-20191115221424-83cc0476cb11/go.mod h1:n3cpQtvxv34hfy77yVDNjmbRyujviMdxYliBSkLhpCc=
 google.golang.org/genproto v0.0.0-20191230161307-f3c370f40bfb/go.mod h1:n3cpQtvxv34hfy77yVDNjmbRyujviMdxYliBSkLhpCc=
 google.golang.org/genproto v0.0.0-20200122232147-0452cf42e150/go.mod h1:n3cpQtvxv34hfy77yVDNjmbRyujviMdxYliBSkLhpCc=
 google.golang.org/genproto v0.0.0-20200204135345-fa8e72b47b90/go.mod h1:GmwEX6Z4W5gMy59cAlVYjN9JhxgbQH6Gn+gFDQe2lzA=
@@ -761,11 +765,14 @@ k8s.io/api v0.18.9/go.mod h1:9u/h6sUh6FxfErv7QqetX1EB3yBMIYOBXzdcf0Gf0rc=
 k8s.io/apiextensions-apiserver v0.18.9/go.mod h1:JagmAhU0TVENzgUZqHJsjCSDh7YuV5o6g01G1Fwh7zI=
 k8s.io/apimachinery v0.18.9/go.mod h1:PF5taHbXgTEJLU+xMypMmYTXTWPJ5LaW8bfsisxnEXk=
 k8s.io/apiserver v0.18.9/go.mod h1:vXQzMtUCLsGg1Bh+7Jo2mZKHpHZFCZn8eTNSepcIA1M=
+k8s.io/client-go v0.18.9 h1:sPHX49yOtUqv1fl49TwV3f8cC0N3etSnwgFGsIsXnZc=
 k8s.io/client-go v0.18.9/go.mod h1:UjkEetDmr40P9NX0Ok3Idt08FCf2I4mIHgjFsot77uY=
 k8s.io/code-generator v0.18.9/go.mod h1:TgNEVx9hCyPGpdtCWA34olQYLkh3ok9ar7XfSsr8b6c=
 k8s.io/component-base v0.18.9/go.mod h1:tUo4qZtV8m7t/U+0DgY+fcnn4BFZ480fZdzxOkWH4zk=
 k8s.io/gengo v0.0.0-20190128074634-0689ccc1d7d6/go.mod h1:ezvh/TsK7cY6rbqRK0oQQ8IAqLxYwwyPxAX1Pzy0ii0=
 k8s.io/gengo v0.0.0-20200114144118-36b2048a9120/go.mod h1:ezvh/TsK7cY6rbqRK0oQQ8IAqLxYwwyPxAX1Pzy0ii0=
+k8s.io/heapster v1.5.4 h1:lH2GCZdqRmUKDoyqRgiXbRmIcevaPYTvkguOuYUl8gQ=
+k8s.io/heapster v1.5.4/go.mod h1:h1uhptVXMwC8xtZBYsPXKVi8fpdlYkTs6k949KozGrM=
 k8s.io/klog v0.0.0-20181102134211-b9b56d5dfc92/go.mod h1:Gq+BEi5rUBO/HRz0bTSXDUcqjScdoY3a9IHpCEIOOfk=
 k8s.io/klog v0.3.0/go.mod h1:Gq+BEi5rUBO/HRz0bTSXDUcqjScdoY3a9IHpCEIOOfk=
 k8s.io/klog v1.0.0/go.mod h1:4Bi6QPql/J/LkTDqv7R/cd3hPo4k2DG6Ptcz060Ez5I=

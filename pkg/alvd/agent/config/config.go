@@ -9,6 +9,9 @@ import (
 type Config struct {
 	ServerAddress string
 
+	AgentName string
+	AgentPort uint
+
 	NGTConfig *ngt.Data
 }
 

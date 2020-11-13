@@ -1,10 +1,23 @@
 package config
 
 import (
+	"github.com/kpango/fuid"
 	valdconfig "github.com/rinx/alvd/internal/config"
 )
 
 type OptionFunc func(c *Config) error
+
+func WithAgentName(name string) OptionFunc {
+	return func(c *Config) error {
+		if name != "" {
+			c.AgentName = name
+		} else {
+			c.AgentName = fuid.String()
+		}
+
+		return nil
+	}
+}
 
 func WithServerAddress(addr string) OptionFunc {
 	return func(c *Config) error {
@@ -76,6 +89,7 @@ func WithGRPCServer(enable bool, host string, port uint) OptionFunc {
 					Mode: "GRPC",
 				},
 			)
+			c.AgentPort = port
 		}
 
 		return nil

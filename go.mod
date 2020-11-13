@@ -49,16 +49,19 @@ require (
 	github.com/hashicorp/go-version v1.2.1
 	github.com/json-iterator/go v1.1.10
 	github.com/kpango/fastime v1.0.16
+	github.com/kpango/fuid v0.0.0-20200823100533-287aa95e0641
 	github.com/kpango/gache v1.2.3
 	github.com/kpango/glg v1.5.1
 	github.com/rancher/remotedialer v0.2.5
 	github.com/scylladb/gocqlx v1.5.0
 	github.com/urfave/cli/v2 v2.2.0
 	github.com/vdaas/vald v0.0.62
+	github.com/vdaas/vald/apis v0.0.0-20191116110024-e4d8aeefc026
 	go.opencensus.io v0.22.5
 	go.uber.org/automaxprocs v1.3.0
 	golang.org/x/sys v0.0.0-20201110211018-35f3e6cf4a65
 	google.golang.org/api v0.35.0
 	google.golang.org/grpc v1.33.2
 	gopkg.in/yaml.v2 v2.3.0
+	k8s.io/heapster v1.5.4
 )
