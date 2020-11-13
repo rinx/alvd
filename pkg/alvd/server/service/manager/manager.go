@@ -21,7 +21,7 @@ type manager struct {
 	tunnel tunnel.Tunnel
 
 	clients []client
-	mu      sync.Mutex
+	mu      sync.RWMutex
 }
 
 type client struct {
@@ -37,6 +37,8 @@ type Manager interface {
 	Close() error
 	GetClient(addr string) (vald.Client, error)
 	GetAgentClient(addr string) (core.AgentClient, error)
+
+	Broadcast(ctx context.Context, f func(ctx context.Context, client vald.Client) error) error
 }
 
 func New(tun tunnel.Tunnel) (Manager, error) {
@@ -108,6 +110,13 @@ func (m *manager) GetAgentClient(addr string) (core.AgentClient, error) {
 	return core.NewAgentClient(conn), nil
 }
 
+func (m *manager) getClientsList() []client {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	return m.clients
+}
+
 func (m *manager) updateClientsList(ctx context.Context, ech chan error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -144,4 +153,35 @@ func (m *manager) updateClientsList(ctx context.Context, ech chan error) {
 		jx := m.clients[j].indexInfo.Stored + m.clients[j].indexInfo.Uncommitted
 		return ix < jx
 	})
+}
+
+func (m *manager) Broadcast(
+	ctx context.Context,
+	f func(ctx context.Context, client vald.Client) error,
+) error {
+	cl := m.getClientsList()
+	wg := sync.WaitGroup{}
+
+	for _, c := range cl {
+		wg.Add(1)
+
+		go func(c client) {
+			defer wg.Done()
+
+			client, err := m.GetClient(c.addr)
+			if err != nil {
+				log.Errorf("%s", err)
+				return
+			}
+
+			err = f(ctx, client)
+			if err != nil {
+				log.Errorf("%s", err)
+			}
+		}(c)
+	}
+
+	wg.Wait()
+
+	return nil
 }

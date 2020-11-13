@@ -2,7 +2,10 @@ package handler
 
 import (
 	"context"
+	"fmt"
+	"sync"
 
+	"github.com/rinx/alvd/internal/net/grpc/status"
 	"github.com/rinx/alvd/pkg/alvd/server/service/manager"
 	"github.com/vdaas/vald/apis/grpc/v1/payload"
 	"github.com/vdaas/vald/apis/grpc/v1/vald"
@@ -22,14 +25,32 @@ func (s *server) Exists(
 	ctx context.Context,
 	meta *payload.Object_ID,
 ) (id *payload.Object_ID, err error) {
-	client, err := s.manager.GetClient("agent:8081")
-	if err != nil {
-		return nil, err
+	ctx, cancel := context.WithCancel(ctx)
+
+	var once sync.Once
+
+	err = s.manager.Broadcast(ctx, func(ctx context.Context, client vald.Client) error {
+		res, err := client.Exists(ctx, meta)
+		if err != nil {
+			return nil
+		}
+
+		if res != nil && res.Id != "" {
+			once.Do(func() {
+				id = &payload.Object_ID{
+					Id: res.Id,
+				}
+				cancel()
+			})
+		}
+
+		return nil
+	})
+	if err != nil || id == nil || id.Id == "" {
+		return nil, status.WrapWithNotFound(fmt.Sprintf("not found: %s", err), err)
 	}
 
-	return client.Exists(ctx, &payload.Object_ID{
-		Id: "test",
-	})
+	return id, nil
 }
 
 func (s *server) Search(
