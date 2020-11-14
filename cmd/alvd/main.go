@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -15,10 +14,6 @@ func main() {
 	app := &cli.App{
 		Name:  "alvd",
 		Usage: "A Lightweight Vald",
-		Action: func(c *cli.Context) error {
-			fmt.Println("boom! I say!")
-			return nil
-		},
 		Commands: []*cli.Command{
 			server.NewCommand(),
 			agent.NewCommand(),
