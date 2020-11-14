@@ -46,6 +46,7 @@ cmd/alvd/alvd: \
 	    $(dir $@)main.go
 
 internal: $(VALD_DIR)
+	mkdir -p $(dir $@)
 	cp -r $(VALD_DIR)/$@ $@
 	find $@ -type f -name "*.go" | xargs sed -i "s:$(VALD_REPO)/internal:$(ORG)/$(REPO)/internal:g"
 	find $@ -type f -name "*.go" | xargs sed -i "s:$(VALD_REPO)/pkg/agent/internal:$(ORG)/$(REPO)/pkg/vald/agent/internal:g"
@@ -54,12 +55,14 @@ internal: $(VALD_DIR)
 pkg/vald/agent/ngt: \
 	$(VALD_DIR) \
 	pkg/vald/agent/internal
+	mkdir -p $(dir $@)
 	cp -r $(VALD_DIR)/pkg/agent/core/ngt $@
 	find $@ -type f -name "*.go" | xargs sed -i "s:$(VALD_REPO)/internal:$(ORG)/$(REPO)/internal:g"
 	find $@ -type f -name "*.go" | xargs sed -i "s:$(VALD_REPO)/pkg/agent/internal:$(ORG)/$(REPO)/pkg/vald/agent/internal:g"
 	find $@ -type f -name "*.go" | xargs sed -i "s:$(VALD_REPO)/pkg/agent/core/ngt:$(ORG)/$(REPO)/pkg/vald/agent/ngt:g"
 
 pkg/vald/agent/internal: $(VALD_DIR)
+	mkdir -p $(dir $@)
 	cp -r $(VALD_DIR)/pkg/agent/internal $@
 	find $@ -type f -name "*.go" | xargs sed -i "s:$(VALD_REPO)/internal:$(ORG)/$(REPO)/internal:g"
 
