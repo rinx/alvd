@@ -173,7 +173,17 @@ func (s *server) SearchByID(
 	ctx context.Context,
 	req *payload.Search_IDRequest,
 ) (res *payload.Search_Response, err error) {
-	return res, nil
+	vec, err := s.GetObject(ctx, &payload.Object_ID{
+		Id: req.GetId(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return s.Search(ctx, &payload.Search_Request{
+		Vector: vec.GetVector(),
+		Config: req.GetConfig(),
+	})
 }
 
 func (s *server) StreamSearch(stream vald.Search_StreamSearchServer) error {
@@ -252,6 +262,29 @@ func (s *server) Update(
 	ctx context.Context,
 	req *payload.Update_Request,
 ) (res *payload.Object_Location, err error) {
+	res, err = s.Remove(ctx, &payload.Remove_Request{
+		Id: &payload.Object_ID{
+			Id: req.GetVector().GetId(),
+		},
+		Config: &payload.Remove_Config{
+			SkipStrictExistCheck: req.GetConfig().GetSkipStrictExistCheck(),
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	res, err = s.Insert(ctx, &payload.Insert_Request{
+		Vector: req.GetVector(),
+		Config: &payload.Insert_Config{
+			SkipStrictExistCheck: true,
+			Filters:              req.GetConfig().GetFilters(),
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	return res, nil
 }
 
@@ -269,8 +302,33 @@ func (s *server) MultiUpdate(
 func (s *server) Upsert(
 	ctx context.Context,
 	req *payload.Upsert_Request,
-) (loc *payload.Object_Location, err error) {
-	return loc, nil
+) (res *payload.Object_Location, err error) {
+	_, err = s.Exists(ctx, &payload.Object_ID{
+		Id: req.GetVector().GetId(),
+	})
+	if err != nil {
+		res, err = s.Insert(ctx, &payload.Insert_Request{
+			Vector: req.GetVector(),
+			Config: &payload.Insert_Config{
+				SkipStrictExistCheck: true,
+				Filters:              req.GetConfig().GetFilters(),
+			},
+		})
+	} else {
+		res, err = s.Update(ctx, &payload.Update_Request{
+			Vector: req.GetVector(),
+			Config: &payload.Update_Config{
+				SkipStrictExistCheck: true,
+				Filters:              req.GetConfig().GetFilters(),
+			},
+		})
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 func (s *server) StreamUpsert(stream vald.Upsert_StreamUpsertServer) error {
@@ -288,6 +346,30 @@ func (s *server) Remove(
 	ctx context.Context,
 	req *payload.Remove_Request,
 ) (locs *payload.Object_Location, err error) {
+	locs = &payload.Object_Location{
+		Uuid: req.GetId().GetId(),
+	}
+
+	mu := sync.Mutex{}
+
+	err = s.manager.Broadcast(ctx, func(ctx context.Context, client vald.Client) error {
+		loc, err := client.Remove(ctx, req)
+		if err != nil {
+			return nil
+		}
+
+		mu.Lock()
+		defer mu.Unlock()
+
+		locs.Ips = append(locs.GetIps(), loc.GetIps()...)
+		locs.Name = loc.GetName()
+
+		return nil
+	})
+	if err != nil || locs == nil || locs.GetUuid() == "" || locs.GetName() == "" {
+		return nil, status.WrapWithNotFound(fmt.Sprintf("not found: %s", err), err)
+	}
+
 	return locs, nil
 }
 
@@ -306,6 +388,32 @@ func (s *server) GetObject(
 	ctx context.Context,
 	id *payload.Object_ID,
 ) (vec *payload.Object_Vector, err error) {
+	ctx, cancel := context.WithCancel(ctx)
+
+	var once sync.Once
+
+	err = s.manager.Broadcast(ctx, func(ctx context.Context, client vald.Client) error {
+		res, err := client.GetObject(ctx, id)
+		if err != nil {
+			return err
+		}
+
+		if res != nil && res.GetId() != "" && res.GetVector() != nil {
+			once.Do(func() {
+				vec = &payload.Object_Vector{
+					Id:     res.GetId(),
+					Vector: res.GetVector(),
+				}
+				cancel()
+			})
+		}
+
+		return nil
+	})
+	if err != nil || vec == nil || vec.GetId() == "" || vec.GetVector() == nil {
+		return nil, status.WrapWithNotFound(fmt.Sprintf("not found: %s", err), err)
+	}
+
 	return vec, nil
 }
 
