@@ -98,7 +98,7 @@ ngt/install: /usr/local/include/NGT/Capi.h
 	    cmake \
 	    -DCMAKE_C_FLAGS="$(CFLAGS)" \
 	    -DCMAKE_CXX_FLAGS="$(CXXFLAGS)" \
-	    $(NGT_BUILD_OPTIONS)
+	    $(NGT_BUILD_OPTIONS) \
 	    .
 	make -j -C /tmp/NGT-$(NGT_VERSION)
 	make install -C /tmp/NGT-$(NGT_VERSION)
