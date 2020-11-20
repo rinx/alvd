@@ -21,6 +21,7 @@ type Opts struct {
 	CreationEdgeSize    int
 	SearchEdgeSize      int
 	BulkInsertChunkSize int
+	IndexPath           string
 	RESTEnabled         bool
 	RESTHost            string
 	RESTPort            uint
@@ -75,6 +76,11 @@ var Flags = []cli.Flag{
 		Value: 100,
 		Usage: "bulk insert chunk size",
 	},
+	&cli.StringFlag{
+		Name:  "index-path",
+		Value: "",
+		Usage: "index path (if not specified, in-memory mode will be enabled)",
+	},
 	&cli.BoolFlag{
 		Name:  "rest",
 		Value: false,
@@ -118,6 +124,7 @@ func ParseOpts(c *cli.Context) *Opts {
 		CreationEdgeSize:    c.Int("creation-edge-size"),
 		SearchEdgeSize:      c.Int("search-edge-size"),
 		BulkInsertChunkSize: c.Int("bulk-insert-chunk-size"),
+		IndexPath:           c.String("index-path"),
 		RESTEnabled:         c.Bool("rest"),
 		RESTHost:            c.String("rest-host"),
 		RESTPort:            c.Uint("rest-port"),
@@ -152,6 +159,7 @@ func Run(opts *Opts) error {
 		config.WithCreationEdgeSize(opts.CreationEdgeSize),
 		config.WithSearchEdgeSize(opts.SearchEdgeSize),
 		config.WithBulkInsertChunkSize(opts.BulkInsertChunkSize),
+		config.WithIndexPath(opts.IndexPath),
 		config.WithRESTServer(opts.RESTEnabled, opts.RESTHost, opts.RESTPort),
 		config.WithGRPCServer(opts.GRPCEnabled, opts.GRPCHost, opts.GRPCPort),
 	)

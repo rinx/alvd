@@ -220,7 +220,7 @@ func (s *server) Insert(
 
 	succeeded := uint32(0)
 
-	err = s.manager.Range(ctx, s.numReplica, func(ctx context.Context, client vald.Client) error {
+	err = s.manager.Range(ctx, 1, func(ctx context.Context, client vald.Client) error {
 		if atomic.LoadUint32(&succeeded) >= uint32(s.numReplica) {
 			return nil
 		}

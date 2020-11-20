@@ -89,6 +89,20 @@ func WithBulkInsertChunkSize(size int) OptionFunc {
 	}
 }
 
+func WithIndexPath(path string) OptionFunc {
+	return func(c *Config) error {
+		if path == "" {
+			c.NGTConfig.NGT.EnableInMemoryMode = true
+			return nil
+		}
+
+		c.NGTConfig.NGT.EnableInMemoryMode = false
+		c.NGTConfig.NGT.IndexPath = path
+
+		return nil
+	}
+}
+
 func WithRESTServer(enable bool, host string, port uint) OptionFunc {
 	return func(c *Config) error {
 		if enable {
