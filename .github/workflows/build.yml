@@ -1,0 +1,43 @@
+name: "Build"
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "*.*.*"
+      - "v*.*.*"
+      - "*.*.*-*"
+      - "v*.*.*-*"
+  pull_request:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.15.5'
+      - name: Build
+        run: |
+          make
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: alvd-linux
+          path: cmd/alvd/alvd
+  build-linux-avx2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.15.5'
+      - name: Build
+        run: |
+          make NGT_BUILD_OPTIONS=''
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: alvd-linux-avx2
+          path: cmd/alvd/alvd
