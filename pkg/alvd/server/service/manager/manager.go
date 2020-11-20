@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/rinx/alvd/internal/errors"
 	"github.com/rinx/alvd/internal/log"
 	"github.com/rinx/alvd/pkg/alvd/server/service/tunnel"
 	"github.com/vdaas/vald/apis/grpc/v1/agent/core"
@@ -162,12 +163,31 @@ func (m *manager) updateClientsList(ctx context.Context, ech chan error) {
 	})
 }
 
+func collectError(ctx context.Context, err *error, ech <-chan error) {
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case e := <-ech:
+			if e != nil {
+				*err = errors.Wrap(*err, e.Error())
+			}
+		}
+	}
+}
+
 func (m *manager) Broadcast(
 	ctx context.Context,
 	f func(ctx context.Context, client vald.Client) error,
-) error {
+) (err error) {
 	cl := m.getClientsList()
 	wg := sync.WaitGroup{}
+
+	ech := make(chan error, 1)
+	defer close(ech)
+
+	ectx, cancel := context.WithCancel(ctx)
+	go collectError(ectx, &err, ech)
 
 	for _, c := range cl {
 		wg.Add(1)
@@ -177,30 +197,38 @@ func (m *manager) Broadcast(
 
 			client, err := m.GetClient(c.addr)
 			if err != nil {
-				log.Errorf("Cannot get client for %s: %s", c.addr, err)
+				ech <- errors.Errorf("Cannot get client for %s: %s", c.addr, err)
 				return
 			}
 
 			err = f(ctx, client)
 			if err != nil {
-				log.Errorf("Error from %s: %s", c.addr, err)
+				ech <- errors.Errorf("Error from %s: %s", c.addr, err)
 			}
 		}(c)
 	}
 
 	wg.Wait()
 
-	return nil
+	cancel()
+
+	return err
 }
 
 func (m *manager) Range(
 	ctx context.Context,
 	concurrency int,
 	f func(ctx context.Context, client vald.Client) error,
-) error {
+) (err error) {
 	cl := m.getClientsList()
 	wg := sync.WaitGroup{}
 	semaphore := make(chan struct{}, concurrency)
+
+	ech := make(chan error, 1)
+	defer close(ech)
+
+	ectx, cancel := context.WithCancel(ctx)
+	go collectError(ectx, &err, ech)
 
 	for _, c := range cl {
 		wg.Add(1)
@@ -223,18 +251,20 @@ func (m *manager) Range(
 
 			client, err := m.GetClient(c.addr)
 			if err != nil {
-				log.Errorf("Cannot get client for %s: %s", c.addr, err)
+				ech <- errors.Errorf("Cannot get client for %s: %s", c.addr, err)
 				return
 			}
 
 			err = f(ctx, client)
 			if err != nil {
-				log.Errorf("Error from %s: %s", c.addr, err)
+				ech <- errors.Errorf("Error from %s: %s", c.addr, err)
 			}
 		}(c)
 	}
 
 	wg.Wait()
 
-	return nil
+	cancel()
+
+	return err
 }

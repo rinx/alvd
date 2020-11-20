@@ -159,9 +159,10 @@ func (s *server) Search(
 
 			if num != 0 && nres+1 > num {
 				res.Results = res.GetResults()[:num]
+				nres--
 			}
 
-			if last := res.GetResults()[nres-1].GetDistance(); last < math.Float32frombits(atomic.LoadUint32(&maxDist)) {
+			if last := res.GetResults()[nres].GetDistance(); last < math.Float32frombits(atomic.LoadUint32(&maxDist)) {
 				atomic.StoreUint32(&maxDist, math.Float32bits(last))
 			}
 		}
@@ -229,16 +230,8 @@ func (s *server) Insert(
 
 		return nil
 	})
-	if err != nil {
+	if err != nil && succeeded < uint32(s.numReplica) {
 		return nil, err
-	}
-
-	if succeeded < uint32(s.numReplica) {
-		return nil, errors.Errorf(
-			"failed to insert => required replicas: %d, succeeded: %d",
-			s.numReplica,
-			succeeded,
-		)
 	}
 
 	return ce, nil

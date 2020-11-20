@@ -12,18 +12,21 @@ import (
 )
 
 type Opts struct {
-	ServerAddress string
-	AgentName     string
-	LogLevel      string
-	Dimension     int
-	DistanceType  string
-	ObjectType    string
-	RESTEnabled   bool
-	RESTHost      string
-	RESTPort      uint
-	GRPCEnabled   bool
-	GRPCHost      string
-	GRPCPort      uint
+	ServerAddress       string
+	AgentName           string
+	LogLevel            string
+	Dimension           int
+	DistanceType        string
+	ObjectType          string
+	CreationEdgeSize    int
+	SearchEdgeSize      int
+	BulkInsertChunkSize int
+	RESTEnabled         bool
+	RESTHost            string
+	RESTPort            uint
+	GRPCEnabled         bool
+	GRPCHost            string
+	GRPCPort            uint
 }
 
 var Flags = []cli.Flag{
@@ -56,6 +59,21 @@ var Flags = []cli.Flag{
 		Name:  "object-type",
 		Value: "float",
 		Usage: "object type",
+	},
+	&cli.IntFlag{
+		Name:  "creation-edge-size",
+		Value: 10,
+		Usage: "creation edge size",
+	},
+	&cli.IntFlag{
+		Name:  "search-edge-size",
+		Value: 40,
+		Usage: "search edge size",
+	},
+	&cli.IntFlag{
+		Name:  "bulk-insert-chunk-size",
+		Value: 100,
+		Usage: "bulk insert chunk size",
 	},
 	&cli.BoolFlag{
 		Name:  "rest",
@@ -91,18 +109,21 @@ var Flags = []cli.Flag{
 
 func ParseOpts(c *cli.Context) *Opts {
 	return &Opts{
-		AgentName:     c.String("name"),
-		ServerAddress: c.String("server"),
-		LogLevel:      c.String("log-level"),
-		Dimension:     c.Int("dimension"),
-		DistanceType:  c.String("distance-type"),
-		ObjectType:    c.String("object-type"),
-		RESTEnabled:   c.Bool("rest"),
-		RESTHost:      c.String("rest-host"),
-		RESTPort:      c.Uint("rest-port"),
-		GRPCEnabled:   c.Bool("grpc"),
-		GRPCHost:      c.String("grpc-host"),
-		GRPCPort:      c.Uint("grpc-port"),
+		AgentName:           c.String("name"),
+		ServerAddress:       c.String("server"),
+		LogLevel:            c.String("log-level"),
+		Dimension:           c.Int("dimension"),
+		DistanceType:        c.String("distance-type"),
+		ObjectType:          c.String("object-type"),
+		CreationEdgeSize:    c.Int("creation-edge-size"),
+		SearchEdgeSize:      c.Int("search-edge-size"),
+		BulkInsertChunkSize: c.Int("bulk-insert-chunk-size"),
+		RESTEnabled:         c.Bool("rest"),
+		RESTHost:            c.String("rest-host"),
+		RESTPort:            c.Uint("rest-port"),
+		GRPCEnabled:         c.Bool("grpc"),
+		GRPCHost:            c.String("grpc-host"),
+		GRPCPort:            c.Uint("grpc-port"),
 	}
 }
 
@@ -128,6 +149,9 @@ func Run(opts *Opts) error {
 		config.WithDimension(opts.Dimension),
 		config.WithDistanceType(opts.DistanceType),
 		config.WithObjectType(opts.ObjectType),
+		config.WithCreationEdgeSize(opts.CreationEdgeSize),
+		config.WithSearchEdgeSize(opts.SearchEdgeSize),
+		config.WithBulkInsertChunkSize(opts.BulkInsertChunkSize),
 		config.WithRESTServer(opts.RESTEnabled, opts.RESTHost, opts.RESTPort),
 		config.WithGRPCServer(opts.GRPCEnabled, opts.GRPCHost, opts.GRPCPort),
 	)

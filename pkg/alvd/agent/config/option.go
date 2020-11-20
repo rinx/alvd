@@ -59,6 +59,36 @@ func WithObjectType(ot string) OptionFunc {
 	}
 }
 
+func WithCreationEdgeSize(size int) OptionFunc {
+	return func(c *Config) error {
+		if size != 0 {
+			c.NGTConfig.NGT.CreationEdgeSize = size
+		}
+
+		return nil
+	}
+}
+
+func WithSearchEdgeSize(size int) OptionFunc {
+	return func(c *Config) error {
+		if size != 0 {
+			c.NGTConfig.NGT.SearchEdgeSize = size
+		}
+
+		return nil
+	}
+}
+
+func WithBulkInsertChunkSize(size int) OptionFunc {
+	return func(c *Config) error {
+		if size != 0 {
+			c.NGTConfig.NGT.BulkInsertChunkSize = 0
+		}
+
+		return nil
+	}
+}
+
 func WithRESTServer(enable bool, host string, port uint) OptionFunc {
 	return func(c *Config) error {
 		if enable {
