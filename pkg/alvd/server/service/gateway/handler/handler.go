@@ -3,21 +3,31 @@ package handler
 import (
 	"context"
 	"fmt"
+	"math"
 	"sync"
+	"sync/atomic"
+	"time"
 
+	"github.com/rinx/alvd/internal/errors"
 	"github.com/rinx/alvd/internal/net/grpc/status"
 	"github.com/rinx/alvd/pkg/alvd/server/service/manager"
 	"github.com/vdaas/vald/apis/grpc/v1/payload"
 	"github.com/vdaas/vald/apis/grpc/v1/vald"
 )
 
+const (
+	defaultTimeout = 3 * time.Second
+)
+
 type server struct {
-	manager manager.Manager
+	manager    manager.Manager
+	numReplica int
 }
 
 func New(man manager.Manager) vald.Server {
 	return &server{
-		manager: man,
+		manager:    man,
+		numReplica: 3,
 	}
 }
 
@@ -32,13 +42,13 @@ func (s *server) Exists(
 	err = s.manager.Broadcast(ctx, func(ctx context.Context, client vald.Client) error {
 		res, err := client.Exists(ctx, meta)
 		if err != nil {
-			return nil
+			return err
 		}
 
-		if res != nil && res.Id != "" {
+		if res != nil && res.GetId() != "" {
 			once.Do(func() {
 				id = &payload.Object_ID{
-					Id: res.Id,
+					Id: res.GetId(),
 				}
 				cancel()
 			})
@@ -46,7 +56,7 @@ func (s *server) Exists(
 
 		return nil
 	})
-	if err != nil || id == nil || id.Id == "" {
+	if err != nil || id == nil || id.GetId() == "" {
 		return nil, status.WrapWithNotFound(fmt.Sprintf("not found: %s", err), err)
 	}
 
@@ -57,7 +67,105 @@ func (s *server) Search(
 	ctx context.Context,
 	req *payload.Search_Request,
 ) (res *payload.Search_Response, err error) {
-	return res, nil
+	cfg := req.GetConfig()
+
+	timeout := getTimeout(cfg)
+	num := int(cfg.GetNum())
+
+	res = new(payload.Search_Response)
+	res.Results = make([]*payload.Object_Distance, 0, s.manager.GetAgentCount()*num)
+	dch := make(chan *payload.Object_Distance, cap(res.GetResults())/2)
+
+	var maxDist uint32
+	atomic.StoreUint32(&maxDist, math.Float32bits(math.MaxFloat32))
+
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	wg := sync.WaitGroup{}
+
+	wg.Add(1)
+	go func() {
+		defer cancel()
+		defer wg.Done()
+
+		visited := sync.Map{}
+
+		err = s.manager.Broadcast(ctx, func(ctx context.Context, client vald.Client) error {
+			res, err := client.Search(ctx, req)
+			if err != nil {
+				return err
+			}
+
+			if res == nil || len(res.GetResults()) == 0 {
+				return errors.New("not found")
+			}
+
+			for _, dist := range res.GetResults() {
+				if dist == nil {
+					continue
+				}
+
+				if dist.GetDistance() >= math.Float32frombits(atomic.LoadUint32(&maxDist)) {
+					return nil
+				}
+
+				if _, already := visited.LoadOrStore(dist.GetId(), struct{}{}); !already {
+					select {
+					case <-ctx.Done():
+						return nil
+					case dch <- dist:
+					}
+				}
+			}
+
+			return nil
+		})
+	}()
+
+	for {
+		select {
+		case <-ctx.Done():
+			wg.Wait()
+			close(dch)
+			if num != 0 && len(res.GetResults()) > num {
+				res.Results = res.Results[:num]
+			}
+
+			return res, nil
+		case dist := <-dch:
+			nres := len(res.GetResults())
+
+			if nres >= num && dist.GetDistance() >= math.Float32frombits(atomic.LoadUint32(&maxDist)) {
+				continue
+			}
+
+			idx := -1
+
+			for i := nres - 1; i >= 0; i-- {
+				if res.GetResults()[i].GetDistance() <= dist.GetDistance() {
+					idx = i
+					break
+				}
+			}
+
+			switch idx {
+			case nres:
+				res.Results = append(res.Results, dist)
+			case -1:
+				res.Results = append([]*payload.Object_Distance{dist}, res.Results...)
+			default:
+				res.Results = append(res.GetResults()[:idx+1], res.GetResults()[idx:]...)
+				res.Results[idx+1] = dist
+			}
+
+			if num != 0 && nres+1 > num {
+				res.Results = res.GetResults()[:num]
+			}
+
+			if last := res.GetResults()[nres-1].GetDistance(); last < math.Float32frombits(atomic.LoadUint32(&maxDist)) {
+				atomic.StoreUint32(&maxDist, math.Float32bits(last))
+			}
+		}
+	}
 }
 
 func (s *server) SearchByID(
@@ -93,6 +201,46 @@ func (s *server) Insert(
 	ctx context.Context,
 	req *payload.Insert_Request,
 ) (ce *payload.Object_Location, err error) {
+	mu := sync.Mutex{}
+	ce = &payload.Object_Location{
+		Uuid: req.GetVector().GetId(),
+		Ips:  make([]string, 0, s.numReplica),
+	}
+
+	succeeded := uint32(0)
+
+	err = s.manager.Range(ctx, s.numReplica, func(ctx context.Context, client vald.Client) error {
+		if atomic.LoadUint32(&succeeded) >= uint32(s.numReplica) {
+			return nil
+		}
+
+		loc, err := client.Insert(ctx, req)
+		if err != nil {
+			return err
+		}
+
+		atomic.AddUint32(&succeeded, 1)
+
+		mu.Lock()
+		defer mu.Unlock()
+
+		ce.Ips = append(ce.GetIps(), loc.GetIps()...)
+		ce.Name = loc.GetName()
+
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if succeeded < uint32(s.numReplica) {
+		return nil, errors.Errorf(
+			"failed to insert => required replicas: %d, succeeded: %d",
+			s.numReplica,
+			succeeded,
+		)
+	}
+
 	return ce, nil
 }
 
@@ -170,4 +318,12 @@ func (s *server) GetObject(
 
 func (s *server) StreamGetObject(stream vald.Object_StreamGetObjectServer) error {
 	return nil
+}
+
+func getTimeout(cfg *payload.Search_Config) time.Duration {
+	if to := cfg.GetTimeout(); to != 0 {
+		return time.Duration(to)
+	} else {
+		return defaultTimeout
+	}
 }

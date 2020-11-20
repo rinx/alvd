@@ -8,6 +8,8 @@ VALD_DEPTH = 1
 
 NGT_VERSION=1.12.1
 
+GOARCH = $(shell go env GOARCH)
+
 ifeq ($(GOARCH),amd64)
 CFLAGS ?= -mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl
 CXXFLAGS ?= $(CFLAGS)

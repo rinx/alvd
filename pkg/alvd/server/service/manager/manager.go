@@ -38,7 +38,10 @@ type Manager interface {
 	GetClient(addr string) (vald.Client, error)
 	GetAgentClient(addr string) (core.AgentClient, error)
 
+	GetAgentCount() int
+
 	Broadcast(ctx context.Context, f func(ctx context.Context, client vald.Client) error) error
+	Range(ctx context.Context, concurrency int, f func(ctx context.Context, client vald.Client) error) error
 }
 
 func New(tun tunnel.Tunnel) (Manager, error) {
@@ -110,6 +113,10 @@ func (m *manager) GetAgentClient(addr string) (core.AgentClient, error) {
 	return core.NewAgentClient(conn), nil
 }
 
+func (m *manager) GetAgentCount() int {
+	return len(m.getClientsList())
+}
+
 func (m *manager) getClientsList() []client {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -170,13 +177,59 @@ func (m *manager) Broadcast(
 
 			client, err := m.GetClient(c.addr)
 			if err != nil {
-				log.Errorf("%s", err)
+				log.Errorf("Cannot get client for %s: %s", c.addr, err)
 				return
 			}
 
 			err = f(ctx, client)
 			if err != nil {
-				log.Errorf("%s", err)
+				log.Errorf("Error from %s: %s", c.addr, err)
+			}
+		}(c)
+	}
+
+	wg.Wait()
+
+	return nil
+}
+
+func (m *manager) Range(
+	ctx context.Context,
+	concurrency int,
+	f func(ctx context.Context, client vald.Client) error,
+) error {
+	cl := m.getClientsList()
+	wg := sync.WaitGroup{}
+	semaphore := make(chan struct{}, concurrency)
+
+	for _, c := range cl {
+		wg.Add(1)
+
+		go func(c client) {
+			defer wg.Done()
+
+			defer func() {
+				select {
+				case <-ctx.Done():
+				case <-semaphore:
+				}
+			}()
+
+			select {
+			case <-ctx.Done():
+				return
+			case semaphore <- struct{}{}:
+			}
+
+			client, err := m.GetClient(c.addr)
+			if err != nil {
+				log.Errorf("Cannot get client for %s: %s", c.addr, err)
+				return
+			}
+
+			err = f(ctx, client)
+			if err != nil {
+				log.Errorf("Error from %s: %s", c.addr, err)
 			}
 		}(c)
 	}
