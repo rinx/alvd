@@ -15,7 +15,8 @@ import (
 )
 
 type daemon struct {
-	addr string
+	addr     string
+	grpcAddr string
 
 	cancel context.CancelFunc
 
@@ -43,7 +44,7 @@ func New(cfg *config.Config) (Daemon, error) {
 
 	h := handler.New(m)
 
-	g, err := gateway.New(h)
+	g, err := gateway.New(h, cfg.GRPCHost, cfg.GRPCPort)
 	if err != nil {
 		return nil, err
 	}

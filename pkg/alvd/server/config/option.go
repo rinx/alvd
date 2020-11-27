@@ -19,3 +19,21 @@ func WithAddr(addr string) OptionFunc {
 		return nil
 	}
 }
+
+func WithGRPCHost(host string) OptionFunc {
+	return func(c *Config) error {
+		if host != "" {
+			c.GRPCHost = host
+		}
+
+		return nil
+	}
+}
+
+func WithGRPCPort(port uint) OptionFunc {
+	return func(c *Config) error {
+		c.GRPCPort = int(port)
+
+		return nil
+	}
+}

@@ -12,6 +12,8 @@ import (
 
 type gateway struct {
 	handler vald.Server
+
+	addr string
 }
 
 type Gateway interface {
@@ -19,10 +21,12 @@ type Gateway interface {
 	Close() error
 }
 
-func New(handler vald.Server) (Gateway, error) {
+func New(handler vald.Server, host string, port int) (Gateway, error) {
+	addr := fmt.Sprintf("%s:%d", host, port)
 
 	return &gateway{
 		handler: handler,
+		addr:    addr,
 	}, nil
 }
 
@@ -62,11 +66,9 @@ func (g *gateway) startGRPCServer(ctx context.Context) <-chan error {
 		defer close(ech)
 
 		for {
-			addr := fmt.Sprintf("%s:%d", "0.0.0.0", 8082)
+			log.Infof("listen: %s", g.addr)
 
-			log.Infof("listen: %s", addr)
-
-			lis, err := net.Listen("tcp", addr)
+			lis, err := net.Listen("tcp", g.addr)
 			if err != nil {
 				ech <- err
 			} else {

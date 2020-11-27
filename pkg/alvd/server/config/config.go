@@ -7,7 +7,9 @@ import (
 type Config struct {
 	AgentEnabled bool
 
-	Addr string
+	Addr     string
+	GRPCHost string
+	GRPCPort int
 }
 
 func New(opts ...OptionFunc) (*Config, error) {

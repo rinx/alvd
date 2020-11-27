@@ -39,7 +39,7 @@ var Flags = []cli.Flag{
 	&cli.StringFlag{
 		Name:  "server",
 		Value: "0.0.0.0:8000",
-		Usage: "server address",
+		Usage: "alvd server address",
 	},
 	&cli.StringFlag{
 		Name:  "log-level",
@@ -99,17 +99,17 @@ var Flags = []cli.Flag{
 	&cli.BoolFlag{
 		Name:  "grpc",
 		Value: true,
-		Usage: "grpc server enabled",
+		Usage: "agent gRPC API enabled",
 	},
 	&cli.StringFlag{
 		Name:  "grpc-host",
 		Value: "0.0.0.0",
-		Usage: "grpc server host",
+		Usage: "agent gRPC API host",
 	},
 	&cli.UintFlag{
 		Name:  "grpc-port",
 		Value: 8081,
-		Usage: "grpc server port",
+		Usage: "agent gRPC API port",
 	},
 }
 
