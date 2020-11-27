@@ -7,3 +7,28 @@ A lightweight distributed vector search engine based on [Vald](https://vald.vdaa
 - easy to run
 - consists of Agent and Server
 - works without Kubernetes
+
+Quick Start
+---
+
+Get a latest build from [Actions](https://github.com/rinx/alvd/actions) build results and unzip it.
+
+
+TBW
+
+
+Current Status
+---
+
+- Agent is just wrapping Vald Agent NGT.
+- uses Vald v1 API ([#826](https://github.com/vdaas/vald/pull/826)) scheme
+    - Server has APIs in https://github.com/vdaas/vald/tree/feature/apis/v1-new-design/apis/proto/v1/vald
+        - Unary APIs and Streaming APIs are supported.
+        - MultiXXX APIs are not supported.
+
+Build
+---
+
+Just running
+
+    $ make cmd/alvd/alvd
