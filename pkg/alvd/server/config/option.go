@@ -1,5 +1,7 @@
 package config
 
+import "time"
+
 type OptionFunc func(c *Config) error
 
 func WithAgentEnabled(enabled bool) OptionFunc {
@@ -41,6 +43,27 @@ func WithGRPCPort(port uint) OptionFunc {
 func WithReplicas(n uint) OptionFunc {
 	return func(c *Config) error {
 		c.Replicas = int(n)
+
+		return nil
+	}
+}
+
+func WithCheckIndexInterval(s string) OptionFunc {
+	return func(c *Config) error {
+		dur, err := time.ParseDuration(s)
+		if err != nil {
+			return err
+		}
+
+		c.CheckIndexInterval = dur
+
+		return nil
+	}
+}
+
+func WithCreateIndexThreshold(n uint) OptionFunc {
+	return func(c *Config) error {
+		c.CreateIndexThreshold = int(n)
 
 		return nil
 	}

@@ -9,6 +9,7 @@ import (
 	"github.com/rinx/alvd/pkg/alvd/server/config"
 	"github.com/rinx/alvd/pkg/alvd/server/service/gateway"
 	"github.com/rinx/alvd/pkg/alvd/server/service/gateway/handler"
+	"github.com/rinx/alvd/pkg/alvd/server/service/indexer"
 	"github.com/rinx/alvd/pkg/alvd/server/service/manager"
 	"github.com/rinx/alvd/pkg/alvd/server/service/tunnel"
 	"github.com/vdaas/vald/apis/grpc/v1/vald"
@@ -24,6 +25,7 @@ type daemon struct {
 	tunnel  tunnel.Tunnel
 	manager manager.Manager
 	handler vald.Server
+	indexer indexer.Indexer
 }
 
 type Daemon interface {
@@ -37,7 +39,16 @@ func New(cfg *config.Config) (Daemon, error) {
 		return nil, err
 	}
 
-	m, err := manager.New(tun)
+	m, err := manager.New(tun, cfg.CheckIndexInterval)
+	if err != nil {
+		return nil, err
+	}
+
+	i, err := indexer.New(
+		m,
+		cfg.CheckIndexInterval,
+		cfg.CreateIndexThreshold,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -55,6 +66,7 @@ func New(cfg *config.Config) (Daemon, error) {
 		tunnel:  tun,
 		manager: m,
 		handler: h,
+		indexer: i,
 	}, nil
 }
 
@@ -63,6 +75,7 @@ func (d *daemon) Start(ctx context.Context) <-chan error {
 
 	sech := d.startHTTPServer(ctx)
 	mech := d.manager.Start(ctx)
+	iech := d.indexer.Start(ctx)
 	gech := d.gateway.Start(ctx)
 	ech := make(chan error, 1)
 
@@ -80,6 +93,8 @@ func (d *daemon) Start(ctx context.Context) <-chan error {
 			case err := <-sech:
 				ech <- err
 			case err := <-mech:
+				ech <- err
+			case err := <-iech:
 				ech <- err
 			case err := <-gech:
 				ech <- err
@@ -99,7 +114,7 @@ func (d *daemon) startHTTPServer(ctx context.Context) <-chan error {
 		defer close(ech)
 
 		for {
-			log.Infof("listen: %s", d.addr)
+			log.Infof("websocket server starting on %s", d.addr)
 			err := http.ListenAndServe(d.addr, router)
 			if err != nil {
 				ech <- err
@@ -122,6 +137,7 @@ func (d *daemon) startHTTPServer(ctx context.Context) <-chan error {
 
 func (d *daemon) Close() (err error) {
 	d.gateway.Close()
+	d.indexer.Close()
 	d.manager.Close()
 
 	d.cancel()

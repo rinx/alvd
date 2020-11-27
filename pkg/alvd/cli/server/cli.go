@@ -18,7 +18,9 @@ type Opts struct {
 	ServerGRPCHost string
 	ServerGRPCPort uint
 
-	Replicas uint
+	Replicas             uint
+	CheckIndexInterval   string
+	CreateIndexThreshold uint
 
 	*agent.Opts
 }
@@ -44,15 +46,27 @@ var Flags = []cli.Flag{
 		Value: 3,
 		Usage: "number of index replicas",
 	},
+	&cli.StringFlag{
+		Name:  "check-index-interval",
+		Value: "5s",
+		Usage: "check interval for alvd agent index",
+	},
+	&cli.UintFlag{
+		Name:  "create-index-threshold",
+		Value: 100,
+		Usage: "number of data to trigger create index",
+	},
 }
 
 func ParseOpts(c *cli.Context) *Opts {
 	return &Opts{
-		AgentEnabled:   c.Bool("agent"),
-		ServerGRPCHost: c.String("server-grpc-host"),
-		ServerGRPCPort: c.Uint("server-grpc-port"),
-		Replicas:       c.Uint("replicas"),
-		Opts:           agent.ParseOpts(c),
+		AgentEnabled:         c.Bool("agent"),
+		ServerGRPCHost:       c.String("server-grpc-host"),
+		ServerGRPCPort:       c.Uint("server-grpc-port"),
+		Replicas:             c.Uint("replicas"),
+		CheckIndexInterval:   c.String("check-index-interval"),
+		CreateIndexThreshold: c.Uint("create-index-threshold"),
+		Opts:                 agent.ParseOpts(c),
 	}
 }
 
@@ -78,6 +92,8 @@ func Run(opts *Opts) error {
 		config.WithGRPCHost(opts.ServerGRPCHost),
 		config.WithGRPCPort(opts.ServerGRPCPort),
 		config.WithReplicas(opts.Replicas),
+		config.WithCheckIndexInterval(opts.CheckIndexInterval),
+		config.WithCreateIndexThreshold(opts.CreateIndexThreshold),
 	)
 	if err != nil {
 		return err

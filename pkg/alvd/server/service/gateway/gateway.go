@@ -66,7 +66,7 @@ func (g *gateway) startGRPCServer(ctx context.Context) <-chan error {
 		defer close(ech)
 
 		for {
-			log.Infof("listen: %s", g.addr)
+			log.Infof("gateway gRPC API starting on %s", g.addr)
 
 			lis, err := net.Listen("tcp", g.addr)
 			if err != nil {

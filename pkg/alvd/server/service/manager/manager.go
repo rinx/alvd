@@ -21,16 +21,16 @@ type manager struct {
 
 	tunnel tunnel.Tunnel
 
-	clients []client
+	clients []Client
 	mu      sync.RWMutex
 }
 
-type client struct {
-	key  string
-	port int
-	addr string
+type Client struct {
+	Key  string
+	Port int
+	Addr string
 
-	indexInfo *payload.Info_Index_Count
+	IndexInfo *payload.Info_Index_Count
 }
 
 type Manager interface {
@@ -38,6 +38,7 @@ type Manager interface {
 	Close() error
 	GetClient(addr string) (vald.Client, error)
 	GetAgentClient(addr string) (core.AgentClient, error)
+	GetClientsList() []Client
 
 	GetAgentCount() int
 
@@ -45,11 +46,14 @@ type Manager interface {
 	Range(ctx context.Context, concurrency int, f func(ctx context.Context, client vald.Client) error) error
 }
 
-func New(tun tunnel.Tunnel) (Manager, error) {
+func New(
+	tun tunnel.Tunnel,
+	checkIndexInterval time.Duration,
+) (Manager, error) {
 	return &manager{
-		interval: 5000 * time.Millisecond,
+		interval: checkIndexInterval,
 		tunnel:   tun,
-		clients:  make([]client, 0),
+		clients:  make([]Client, 0),
 	}, nil
 }
 
@@ -115,10 +119,10 @@ func (m *manager) GetAgentClient(addr string) (core.AgentClient, error) {
 }
 
 func (m *manager) GetAgentCount() int {
-	return len(m.getClientsList())
+	return len(m.GetClientsList())
 }
 
-func (m *manager) getClientsList() []client {
+func (m *manager) GetClientsList() []Client {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
@@ -131,7 +135,7 @@ func (m *manager) updateClientsList(ctx context.Context, ech chan error) {
 
 	cmap := m.tunnel.Clients()
 
-	m.clients = make([]client, 0, len(cmap))
+	m.clients = make([]Client, 0, len(cmap))
 
 	for key, port := range cmap {
 		addr := toAddr(key, port)
@@ -148,17 +152,17 @@ func (m *manager) updateClientsList(ctx context.Context, ech chan error) {
 			continue
 		}
 
-		m.clients = append(m.clients, client{
-			key:       key,
-			port:      port,
-			addr:      addr,
-			indexInfo: idxInfo,
+		m.clients = append(m.clients, Client{
+			Key:       key,
+			Port:      port,
+			Addr:      addr,
+			IndexInfo: idxInfo,
 		})
 	}
 
 	sort.Slice(m.clients, func(i, j int) bool {
-		ix := m.clients[i].indexInfo.Stored + m.clients[i].indexInfo.Uncommitted
-		jx := m.clients[j].indexInfo.Stored + m.clients[j].indexInfo.Uncommitted
+		ix := m.clients[i].IndexInfo.Stored + m.clients[i].IndexInfo.Uncommitted
+		jx := m.clients[j].IndexInfo.Stored + m.clients[j].IndexInfo.Uncommitted
 		return ix < jx
 	})
 }
@@ -180,7 +184,7 @@ func (m *manager) Broadcast(
 	ctx context.Context,
 	f func(ctx context.Context, client vald.Client) error,
 ) (err error) {
-	cl := m.getClientsList()
+	cl := m.GetClientsList()
 	wg := sync.WaitGroup{}
 
 	ech := make(chan error, 1)
@@ -192,18 +196,18 @@ func (m *manager) Broadcast(
 	for _, c := range cl {
 		wg.Add(1)
 
-		go func(c client) {
+		go func(c Client) {
 			defer wg.Done()
 
-			client, err := m.GetClient(c.addr)
+			client, err := m.GetClient(c.Addr)
 			if err != nil {
-				ech <- errors.Errorf("Cannot get client for %s: %s", c.addr, err)
+				ech <- errors.Errorf("Cannot get client for %s: %s", c.Addr, err)
 				return
 			}
 
 			err = f(ctx, client)
 			if err != nil {
-				ech <- errors.Errorf("Error from %s: %s", c.addr, err)
+				ech <- errors.Errorf("Error from %s: %s", c.Addr, err)
 			}
 		}(c)
 	}
@@ -220,7 +224,7 @@ func (m *manager) Range(
 	concurrency int,
 	f func(ctx context.Context, client vald.Client) error,
 ) (err error) {
-	cl := m.getClientsList()
+	cl := m.GetClientsList()
 	wg := sync.WaitGroup{}
 	semaphore := make(chan struct{}, concurrency)
 
@@ -233,7 +237,7 @@ func (m *manager) Range(
 	for _, c := range cl {
 		wg.Add(1)
 
-		go func(c client) {
+		go func(c Client) {
 			defer wg.Done()
 
 			defer func() {
@@ -249,15 +253,15 @@ func (m *manager) Range(
 			case semaphore <- struct{}{}:
 			}
 
-			client, err := m.GetClient(c.addr)
+			client, err := m.GetClient(c.Addr)
 			if err != nil {
-				ech <- errors.Errorf("Cannot get client for %s: %s", c.addr, err)
+				ech <- errors.Errorf("Cannot get client for %s: %s", c.Addr, err)
 				return
 			}
 
 			err = f(ctx, client)
 			if err != nil {
-				ech <- errors.Errorf("Error from %s: %s", c.addr, err)
+				ech <- errors.Errorf("Error from %s: %s", c.Addr, err)
 			}
 		}(c)
 	}
