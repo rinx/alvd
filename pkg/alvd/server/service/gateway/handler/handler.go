@@ -25,10 +25,10 @@ type server struct {
 	numReplica int
 }
 
-func New(man manager.Manager) vald.Server {
+func New(man manager.Manager, replicas int) vald.Server {
 	return &server{
 		manager:    man,
-		numReplica: 3,
+		numReplica: replicas,
 	}
 }
 

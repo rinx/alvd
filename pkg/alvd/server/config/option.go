@@ -37,3 +37,11 @@ func WithGRPCPort(port uint) OptionFunc {
 		return nil
 	}
 }
+
+func WithReplicas(n uint) OptionFunc {
+	return func(c *Config) error {
+		c.Replicas = int(n)
+
+		return nil
+	}
+}

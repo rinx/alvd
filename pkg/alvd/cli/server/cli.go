@@ -13,9 +13,13 @@ import (
 )
 
 type Opts struct {
-	AgentEnabled   bool
+	AgentEnabled bool
+
 	ServerGRPCHost string
 	ServerGRPCPort uint
+
+	Replicas uint
+
 	*agent.Opts
 }
 
@@ -35,6 +39,11 @@ var Flags = []cli.Flag{
 		Value: 8080,
 		Usage: "alvd server gRPC API host",
 	},
+	&cli.UintFlag{
+		Name:  "replicas",
+		Value: 3,
+		Usage: "number of index replicas",
+	},
 }
 
 func ParseOpts(c *cli.Context) *Opts {
@@ -42,6 +51,7 @@ func ParseOpts(c *cli.Context) *Opts {
 		AgentEnabled:   c.Bool("agent"),
 		ServerGRPCHost: c.String("server-grpc-host"),
 		ServerGRPCPort: c.Uint("server-grpc-port"),
+		Replicas:       c.Uint("replicas"),
 		Opts:           agent.ParseOpts(c),
 	}
 }
@@ -67,6 +77,7 @@ func Run(opts *Opts) error {
 		config.WithAddr(opts.ServerAddress),
 		config.WithGRPCHost(opts.ServerGRPCHost),
 		config.WithGRPCPort(opts.ServerGRPCPort),
+		config.WithReplicas(opts.Replicas),
 	)
 	if err != nil {
 		return err

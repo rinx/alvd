@@ -42,7 +42,7 @@ func New(cfg *config.Config) (Daemon, error) {
 		return nil, err
 	}
 
-	h := handler.New(m)
+	h := handler.New(m, cfg.Replicas)
 
 	g, err := gateway.New(h, cfg.GRPCHost, cfg.GRPCPort)
 	if err != nil {

@@ -10,6 +10,8 @@ type Config struct {
 	Addr     string
 	GRPCHost string
 	GRPCPort int
+
+	Replicas int
 }
 
 func New(opts ...OptionFunc) (*Config, error) {
