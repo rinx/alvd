@@ -22,9 +22,6 @@ type Opts struct {
 	SearchEdgeSize      int
 	BulkInsertChunkSize int
 	IndexPath           string
-	RESTEnabled         bool
-	RESTHost            string
-	RESTPort            uint
 	GRPCEnabled         bool
 	GRPCHost            string
 	GRPCPort            uint
@@ -82,21 +79,6 @@ var Flags = []cli.Flag{
 		Usage: "index path (if not specified, in-memory mode will be enabled)",
 	},
 	&cli.BoolFlag{
-		Name:  "rest",
-		Value: false,
-		Usage: "rest server enabled",
-	},
-	&cli.StringFlag{
-		Name:  "rest-host",
-		Value: "0.0.0.0",
-		Usage: "rest server host",
-	},
-	&cli.UintFlag{
-		Name:  "rest-port",
-		Value: 8080,
-		Usage: "rest server port",
-	},
-	&cli.BoolFlag{
 		Name:  "grpc",
 		Value: true,
 		Usage: "agent gRPC API enabled",
@@ -125,9 +107,6 @@ func ParseOpts(c *cli.Context) *Opts {
 		SearchEdgeSize:      c.Int("search-edge-size"),
 		BulkInsertChunkSize: c.Int("bulk-insert-chunk-size"),
 		IndexPath:           c.String("index-path"),
-		RESTEnabled:         c.Bool("rest"),
-		RESTHost:            c.String("rest-host"),
-		RESTPort:            c.Uint("rest-port"),
 		GRPCEnabled:         c.Bool("grpc"),
 		GRPCHost:            c.String("grpc-host"),
 		GRPCPort:            c.Uint("grpc-port"),
@@ -160,7 +139,6 @@ func Run(opts *Opts) error {
 		config.WithSearchEdgeSize(opts.SearchEdgeSize),
 		config.WithBulkInsertChunkSize(opts.BulkInsertChunkSize),
 		config.WithIndexPath(opts.IndexPath),
-		config.WithRESTServer(opts.RESTEnabled, opts.RESTHost, opts.RESTPort),
 		config.WithGRPCServer(opts.GRPCEnabled, opts.GRPCHost, opts.GRPCPort),
 	)
 	if err != nil {

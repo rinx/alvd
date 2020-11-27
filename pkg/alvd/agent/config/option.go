@@ -103,24 +103,6 @@ func WithIndexPath(path string) OptionFunc {
 	}
 }
 
-func WithRESTServer(enable bool, host string, port uint) OptionFunc {
-	return func(c *Config) error {
-		if enable {
-			c.NGTConfig.Server.Servers = append(
-				c.NGTConfig.Server.Servers,
-				&valdconfig.Server{
-					Name: "rest",
-					Host: host,
-					Port: port,
-					Mode: "REST",
-				},
-			)
-		}
-
-		return nil
-	}
-}
-
 func WithGRPCServer(enable bool, host string, port uint) OptionFunc {
 	return func(c *Config) error {
 		if enable {
