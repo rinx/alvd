@@ -41,6 +41,23 @@ clean:
 build: \
 	cmd/alvd/alvd
 
+.PHONY: docker/build
+docker/build: \
+	docker/build/noavx \
+	docker/build/avx2
+
+.PHONY: docker/build/noavx
+docker/build/noavx:
+	docker build \
+		-t $(ORG)/$(REPO):noavx . \
+		--build-arg NGT_BUILD_OPTIONS="-DNGT_AVX_DISABLED=ON"
+
+.PHONY: docker/build/avx2
+docker/build/avx2:
+	docker build \
+		-t $(ORG)/$(REPO):avx2 . \
+		--build-arg NGT_BUILD_OPTIONS=""
+
 cmd/alvd/alvd: \
 	ngt/install \
 	internal \
