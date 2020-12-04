@@ -4,10 +4,12 @@ import (
 	"time"
 
 	"github.com/rinx/alvd/internal/log"
+	"github.com/rinx/alvd/pkg/alvd/cli/agent"
 )
 
 type Config struct {
 	AgentEnabled bool
+	AgentOpts    *agent.Opts
 
 	Addr     string
 	GRPCHost string

@@ -12,19 +12,20 @@ import (
 )
 
 type Opts struct {
-	ServerAddress       string
-	AgentName           string
-	LogLevel            string
-	Dimension           int
-	DistanceType        string
-	ObjectType          string
-	CreationEdgeSize    int
-	SearchEdgeSize      int
-	BulkInsertChunkSize int
-	IndexPath           string
-	GRPCEnabled         bool
-	GRPCHost            string
-	GRPCPort            uint
+	ServerAddress          string
+	AgentName              string
+	LogLevel               string
+	Dimension              int
+	DistanceType           string
+	ObjectType             string
+	CreationEdgeSize       int
+	SearchEdgeSize         int
+	BulkInsertChunkSize    int
+	IndexPath              string
+	IndexSelfcheckInterval string
+	GRPCEnabled            bool
+	GRPCHost               string
+	GRPCPort               uint
 }
 
 var Flags = []cli.Flag{
@@ -78,6 +79,11 @@ var Flags = []cli.Flag{
 		Value: "",
 		Usage: "index path (if not specified, in-memory mode will be enabled)",
 	},
+	&cli.StringFlag{
+		Name:  "index-selfcheck-interval",
+		Value: "24h",
+		Usage: "selfcheck interval for alvd agent uncommitted index",
+	},
 	&cli.BoolFlag{
 		Name:  "grpc",
 		Value: true,
@@ -97,19 +103,20 @@ var Flags = []cli.Flag{
 
 func ParseOpts(c *cli.Context) *Opts {
 	return &Opts{
-		AgentName:           c.String("name"),
-		ServerAddress:       c.String("server"),
-		LogLevel:            c.String("log-level"),
-		Dimension:           c.Int("dimension"),
-		DistanceType:        c.String("distance-type"),
-		ObjectType:          c.String("object-type"),
-		CreationEdgeSize:    c.Int("creation-edge-size"),
-		SearchEdgeSize:      c.Int("search-edge-size"),
-		BulkInsertChunkSize: c.Int("bulk-insert-chunk-size"),
-		IndexPath:           c.String("index-path"),
-		GRPCEnabled:         c.Bool("grpc"),
-		GRPCHost:            c.String("grpc-host"),
-		GRPCPort:            c.Uint("grpc-port"),
+		AgentName:              c.String("name"),
+		ServerAddress:          c.String("server"),
+		LogLevel:               c.String("log-level"),
+		Dimension:              c.Int("dimension"),
+		DistanceType:           c.String("distance-type"),
+		ObjectType:             c.String("object-type"),
+		CreationEdgeSize:       c.Int("creation-edge-size"),
+		SearchEdgeSize:         c.Int("search-edge-size"),
+		BulkInsertChunkSize:    c.Int("bulk-insert-chunk-size"),
+		IndexPath:              c.String("index-path"),
+		IndexSelfcheckInterval: c.String("index-selfcheck-interval"),
+		GRPCEnabled:            c.Bool("grpc"),
+		GRPCHost:               c.String("grpc-host"),
+		GRPCPort:               c.Uint("grpc-port"),
 	}
 }
 
@@ -139,6 +146,14 @@ func Run(opts *Opts) error {
 		config.WithSearchEdgeSize(opts.SearchEdgeSize),
 		config.WithBulkInsertChunkSize(opts.BulkInsertChunkSize),
 		config.WithIndexPath(opts.IndexPath),
+		config.WithAutoIndexCheckDuration(opts.IndexSelfcheckInterval),
+		config.WithAutoIndexDurationLimit(opts.IndexSelfcheckInterval),
+		config.WithAutoSaveIndexDuration(opts.IndexSelfcheckInterval),
+		config.WithAutoIndexLength(1),
+		config.WithProactiveGC(true),
+		config.WithDefaultPoolSize(10000),
+		config.WithDefaultRadius(-1.0),
+		config.WithDefaultEpsilon(0.01),
 		config.WithGRPCServer(opts.GRPCEnabled, opts.GRPCHost, opts.GRPCPort),
 	)
 	if err != nil {

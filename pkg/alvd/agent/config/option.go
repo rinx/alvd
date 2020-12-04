@@ -103,6 +103,74 @@ func WithIndexPath(path string) OptionFunc {
 	}
 }
 
+func WithAutoIndexCheckDuration(s string) OptionFunc {
+	return func(c *Config) error {
+		c.NGTConfig.NGT.AutoIndexCheckDuration = s
+
+		return nil
+	}
+}
+
+func WithAutoIndexDurationLimit(s string) OptionFunc {
+	return func(c *Config) error {
+		c.NGTConfig.NGT.AutoIndexDurationLimit = s
+
+		return nil
+	}
+}
+
+func WithAutoSaveIndexDuration(s string) OptionFunc {
+	return func(c *Config) error {
+		c.NGTConfig.NGT.AutoSaveIndexDuration = s
+
+		return nil
+	}
+}
+
+func WithAutoIndexLength(n int) OptionFunc {
+	return func(c *Config) error {
+		if n > 0 {
+			c.NGTConfig.NGT.AutoIndexLength = n
+		}
+
+		return nil
+	}
+}
+
+func WithProactiveGC(enabled bool) OptionFunc {
+	return func(c *Config) error {
+		c.NGTConfig.NGT.EnableProactiveGC = enabled
+
+		return nil
+	}
+}
+
+func WithDefaultPoolSize(size uint32) OptionFunc {
+	return func(c *Config) error {
+		if size != 0 {
+			c.NGTConfig.NGT.DefaultPoolSize = size
+		}
+
+		return nil
+	}
+}
+
+func WithDefaultRadius(r float32) OptionFunc {
+	return func(c *Config) error {
+		c.NGTConfig.NGT.DefaultRadius = r
+
+		return nil
+	}
+}
+
+func WithDefaultEpsilon(e float32) OptionFunc {
+	return func(c *Config) error {
+		c.NGTConfig.NGT.DefaultEpsilon = e
+
+		return nil
+	}
+}
+
 func WithGRPCServer(enable bool, host string, port uint) OptionFunc {
 	return func(c *Config) error {
 		if enable {

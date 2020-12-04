@@ -14,7 +14,7 @@ type indexer struct {
 	manager manager.Manager
 
 	interval  time.Duration
-	threshold uint32
+	threshold int
 }
 
 type Indexer interface {
@@ -30,7 +30,7 @@ func New(
 	return &indexer{
 		manager:   manager,
 		interval:  checkIndexInterval,
-		threshold: uint32(createIndexThreshold),
+		threshold: createIndexThreshold,
 	}, nil
 }
 
@@ -49,7 +49,7 @@ func (i *indexer) Start(ctx context.Context) <-chan error {
 			select {
 			case <-ctx.Done():
 				err := ctx.Err()
-				if err != nil {
+				if err != nil && err != context.Canceled {
 					log.Errorf("error: %s", err)
 				}
 				return
@@ -65,7 +65,7 @@ func (i *indexer) checkIndex(ctx context.Context, ech chan error) {
 	cl := i.manager.GetClientsList()
 
 	for _, c := range cl {
-		if c.IndexInfo.Uncommitted >= i.threshold {
+		if c.UncommittedIndex >= i.threshold {
 			client, err := i.manager.GetAgentClient(c.Addr)
 			if err != nil {
 				ech <- errors.Errorf("Cannot get client for %s: %s", c.Addr, err)
@@ -78,6 +78,8 @@ func (i *indexer) checkIndex(ctx context.Context, ech chan error) {
 			if err != nil {
 				ech <- errors.Errorf("Error occurred when creating index for %s: %s", c.Addr, err)
 			}
+
+			log.Debugf("create index finished for %s", c.Addr)
 		}
 	}
 }

@@ -1,12 +1,26 @@
 package config
 
-import "time"
+import (
+	"time"
+
+	"github.com/rinx/alvd/pkg/alvd/cli/agent"
+)
 
 type OptionFunc func(c *Config) error
 
 func WithAgentEnabled(enabled bool) OptionFunc {
 	return func(c *Config) error {
 		c.AgentEnabled = enabled
+
+		return nil
+	}
+}
+
+func WithAgentOpts(opts *agent.Opts) OptionFunc {
+	return func(c *Config) error {
+		if opts != nil {
+			c.AgentOpts = opts
+		}
 
 		return nil
 	}

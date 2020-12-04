@@ -88,6 +88,7 @@ func Run(opts *Opts) error {
 
 	cfg, err := config.New(
 		config.WithAgentEnabled(opts.AgentEnabled),
+		config.WithAgentOpts(opts.Opts),
 		config.WithAddr(opts.ServerAddress),
 		config.WithGRPCHost(opts.ServerGRPCHost),
 		config.WithGRPCPort(opts.ServerGRPCPort),

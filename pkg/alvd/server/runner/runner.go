@@ -4,9 +4,11 @@ import (
 	"context"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 
 	"github.com/rinx/alvd/internal/log"
+	"github.com/rinx/alvd/pkg/alvd/cli/agent"
 	"github.com/rinx/alvd/pkg/alvd/server/config"
 	"github.com/rinx/alvd/pkg/alvd/server/daemon"
 )
@@ -19,7 +21,7 @@ type Runner interface {
 	Start(ctx context.Context) error
 }
 
-func New(cfg *config.Config) (Runner, error) {
+func New(cfg *config.Config) (_ Runner, err error) {
 	return &runner{
 		cfg: cfg,
 	}, nil
@@ -41,14 +43,28 @@ func (r *runner) Start(ctx context.Context) error {
 	ech := d.Start(ctx)
 	defer d.Close()
 
+	wg := sync.WaitGroup{}
+
+	if r.cfg.AgentEnabled {
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+			agent.Run(r.cfg.AgentOpts)
+		}()
+	}
+
 	for {
 		select {
 		case <-sigCh:
 			cancel()
 		case <-ctx.Done():
+			wg.Wait()
 			return nil
 		case err := <-ech:
-			log.Errorf("error: %s", err)
+			if err != context.Canceled {
+				log.Errorf("error: %s", err)
+			}
 		}
 	}
 }

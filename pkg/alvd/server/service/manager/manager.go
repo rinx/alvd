@@ -30,7 +30,9 @@ type Client struct {
 	Port int
 	Addr string
 
-	IndexInfo *payload.Info_Index_Count
+	StoredIndex      int
+	UncommittedIndex int
+	IsIndexing       bool
 }
 
 type Manager interface {
@@ -72,7 +74,7 @@ func (m *manager) Start(ctx context.Context) <-chan error {
 			select {
 			case <-ctx.Done():
 				err := ctx.Err()
-				if err != nil {
+				if err != nil && err != context.Canceled {
 					log.Errorf("error: %s", err)
 				}
 				return
@@ -137,6 +139,8 @@ func (m *manager) updateClientsList(ctx context.Context, ech chan error) {
 
 	m.clients = make([]Client, 0, len(cmap))
 
+	log.Debugf("%d clients are found. updating client list.", len(cmap))
+
 	for key, port := range cmap {
 		addr := toAddr(key, port)
 
@@ -153,18 +157,22 @@ func (m *manager) updateClientsList(ctx context.Context, ech chan error) {
 		}
 
 		m.clients = append(m.clients, Client{
-			Key:       key,
-			Port:      port,
-			Addr:      addr,
-			IndexInfo: idxInfo,
+			Key:              key,
+			Port:             port,
+			Addr:             addr,
+			StoredIndex:      int(idxInfo.GetStored()),
+			UncommittedIndex: int(idxInfo.GetUncommitted()),
+			IsIndexing:       idxInfo.GetIndexing(),
 		})
 	}
 
 	sort.Slice(m.clients, func(i, j int) bool {
-		ix := m.clients[i].IndexInfo.Stored + m.clients[i].IndexInfo.Uncommitted
-		jx := m.clients[j].IndexInfo.Stored + m.clients[j].IndexInfo.Uncommitted
+		ix := m.clients[i].StoredIndex + m.clients[i].UncommittedIndex
+		jx := m.clients[j].StoredIndex + m.clients[j].UncommittedIndex
 		return ix < jx
 	})
+
+	log.Debugf("client list updated: %#v", m.clients)
 }
 
 func collectError(ctx context.Context, err *error, ech <-chan error) {

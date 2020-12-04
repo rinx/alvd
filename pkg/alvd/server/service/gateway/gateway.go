@@ -43,7 +43,7 @@ func (g *gateway) Start(ctx context.Context) <-chan error {
 			select {
 			case <-ctx.Done():
 				err = ctx.Err()
-				if err != nil {
+				if err != nil && err != context.Canceled {
 					log.Errorf("error: %s", err)
 				}
 				return
@@ -81,7 +81,7 @@ func (g *gateway) startGRPCServer(ctx context.Context) <-chan error {
 			select {
 			case <-ctx.Done():
 				err = ctx.Err()
-				if err != nil {
+				if err != nil && err != context.Canceled {
 					log.Errorf("error: %s", err)
 				}
 				return
