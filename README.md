@@ -19,13 +19,28 @@ alvd is highly inspired by [k3s](https://k3s.io) project.
 Rationale
 ---
 
-TBW
+Vald is an awesome highly scalable distributed vector search engine works on Kubernetes.
+It has great features such as file-based backup, metrics-based ordering of Agents. Also Vald is highly configurable using YAML files.
+
+However it requires
+
+- Kubernetes APIs to discover Vald Agents
+- knowledge of operating Kubernetes
+- knowledge of tuning a lot of complicated parameters
+
+it is a little difficult for the users.
+
+In this project, we eliminated several features of Vald such as (meta, backup manager, index manager, etc...) and just focused on Vald's gateway-lb and agent-ngt.
+By using [rancher/remotedialer](https://github.com/rancher/remotedialer), Vald's discoverer feature is not needed anymore.
+Also we eliminated advanced options and adopt command-line options for configuring the application behavior instead of YAML files.
+
+As stated above, alvd is focused on "easy to use", "Kubernetes-less" and "less components".
 
 Quick Start
 ---
 
 1. Get a latest build from [Actions](https://github.com/rinx/alvd/actions) build results and unzip it.
-2. Run alvd server.
+2. Run alvd Server.
     ```sh
     $ ./alvd server
     2020-12-04 17:30:27     [INFO]: start alvd server
@@ -40,9 +55,9 @@ Quick Start
     INFO[0000] Handling backend connection request [e6pv4sgbv4v78soeosb0]
     2020-12-04 17:30:27     [INFO]: connected to: 0.0.0.0:8000
     ```
-    alvd server's websocket server starts on 0.0.0.0:8000 and alvd server's gRPC API starts on 0.0.0.0:8080.
-    Also, alvd agent's gRPC API starts on 0.0.0.0:8081 (alvd agent process on the server can be disabled using `--agent=false` option).
-3. Run alvd agent on a different node (or a different terminal on the same node with `--server 0.0.0.0:8000` and `--grpc-port 8082` option).
+    alvd Server's websocket server starts on 0.0.0.0:8000 and alvd Server's gRPC API starts on 0.0.0.0:8080.
+    Also, alvd Agent's gRPC API starts on 0.0.0.0:8081 (alvd Agent process on the Server can be disabled using `--agent=false` option).
+3. Run alvd Agent on a different node (or a different terminal on the same node with `--server 0.0.0.0:8000` and `--grpc-port 8082` option).
     ```sh
     $ ./alvd agent --server host-of-server-node:8000
     $ # ./alvd agent --server 0.0.0.0:8000 --grpc-port 8082
@@ -54,12 +69,12 @@ Quick Start
     INFO[0000] Connecting to proxy                           url="ws://host-of-server-node:8000/connect"
     2020-12-04 17:31:34     [INFO]: connected to: host-of-server-node:8000
     ```
-4. Add more alvd agents on the other nodes (or the other ports on the same node).
+4. Add more alvd Agents on the other nodes (or the other ports on the same node).
     ```sh
     $ ./alvd agent --server host-of-server-node:8000
     $ # ./alvd agent --server 0.0.0.0:8000 --grpc-port 808{3,4,5}
     ```
-5. Now we can access the alvd server's gRPC API (`host-of-server-node:8080`) using Vald v1 clients.
+5. Now we can access the alvd Server's gRPC API (`host-of-server-node:8080`) using Vald v1 clients.
     If you don't have one, you can use [valdcli-v1-alpha](https://github.com/vdaas/vald-client-clj/pull/14#issuecomment-738521578) (this CLI is built for linux-amd64).
     ```sh
     $ # insert 100 vectors (dimension: 784) with random IDs
