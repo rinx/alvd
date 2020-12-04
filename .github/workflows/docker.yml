@@ -1,0 +1,46 @@
+name: "Build Docker image"
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "*.*.*"
+      - "v*.*.*"
+      - "*.*.*-*"
+      - "v*.*.*-*"
+
+jobs:
+  build-noavx:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.REPOSITORY_USER }}
+          password: ${{ secrets.REPOSITORY_TOKEN }}
+      - name: Build
+        run: |
+          make docker/build/noavx
+      - name: Publish
+        run: |
+          docker tag rinx/alvd:noavx ghcr.io/rinx/alvd:noavx
+          docker push ghcr.io/rinx/alvd:noavx
+  build-avx2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.REPOSITORY_USER }}
+          password: ${{ secrets.REPOSITORY_TOKEN }}
+      - name: Build
+        run: |
+          make docker/build/avx2
+      - name: Publish
+        run: |
+          docker tag rinx/alvd:avx2 ghcr.io/rinx/alvd:avx2
+          docker push ghcr.io/rinx/alvd:avx2

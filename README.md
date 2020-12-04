@@ -1,6 +1,8 @@
 alvd - A Lightweight Vald
 ===
 
+ [![ghcr.io](https://img.shields.io/badge/ghcr.io-rinx%2Falvd-brightgreen?logo=docker&style=flat-square)](https://github.com/users/rinx/packages/container/package/alvd)
+
 A lightweight distributed vector search engine based on [Vald](https://vald.vdaas.org) codebase.
 
 - single binary
