@@ -9,6 +9,7 @@ on:
       - "*.*.*-*"
       - "v*.*.*-*"
     paths:
+      - ".github/workflows/docker.yaml"
       - "go.mod"
       - "go.sum"
       - "cmd/**"
