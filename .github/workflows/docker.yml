@@ -8,6 +8,13 @@ on:
       - "v*.*.*"
       - "*.*.*-*"
       - "v*.*.*-*"
+    paths:
+      - "go.mod"
+      - "go.sum"
+      - "cmd/**"
+      - "pkg/**"
+      - "Dockerfile"
+      - "Makefile"
 
 jobs:
   build-noavx:

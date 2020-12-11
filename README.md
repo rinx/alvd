@@ -4,6 +4,7 @@ alvd - A Lightweight Vald
 [![License: Apache 2.0](https://img.shields.io/github/license/rinx/alvd.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
 [![release](https://img.shields.io/github/release/rinx/alvd.svg?style=flat-square)](https://github.com/rinx/alvd/releases/latest)
 [![ghcr.io](https://img.shields.io/badge/ghcr.io-rinx%2Falvd-brightgreen?logo=docker&style=flat-square)](https://github.com/users/rinx/packages/container/package/alvd)
+[![Docker Pulls](https://img.shields.io/docker/pulls/rinx/alvd.svg?style=flat-square)](https://hub.docker.com/r/rinx/alvd)
 
 A lightweight distributed vector search engine based on [Vald](https://vald.vdaas.org) codebase.
 
