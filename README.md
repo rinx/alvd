@@ -40,7 +40,7 @@ As stated above, alvd is focused on "easy to use", "Kubernetes-less" and "less c
 Quick Start
 ---
 
-1. Get a latest build from [Actions](https://github.com/rinx/alvd/actions) build results and unzip it.
+1. Get the latest build from [Release](https://github.com/rinx/alvd/releases) page and unzip it.
 2. Run alvd Server.
     ```sh
     $ ./alvd server
