@@ -2,11 +2,14 @@ package runner
 
 import (
 	"context"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
 
-	valdrunner "github.com/rinx/alvd/internal/runner"
+	"github.com/rinx/alvd/internal/log"
 	"github.com/rinx/alvd/pkg/alvd/agent/config"
 	"github.com/rinx/alvd/pkg/alvd/agent/daemon"
-	"github.com/rinx/alvd/pkg/vald/agent/ngt/usecase"
 )
 
 type runner struct {
@@ -32,20 +35,34 @@ func New(cfg *config.Config) (Runner, error) {
 }
 
 func (r *runner) Start(ctx context.Context) error {
-	if r.cfg.NGTConfig == nil {
-		return nil
-	}
+	sigCh := make(chan os.Signal, 1)
+	defer close(sigCh)
 
-	vr, err := usecase.New(r.cfg.NGTConfig)
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	d, err := daemon.New(r.cfg)
 	if err != nil {
 		return err
 	}
 
-	err = r.daemon.Start(ctx)
-	if err != nil {
-		return err
-	}
-	defer r.daemon.Close()
+	ech := d.Start(ctx)
+	defer d.Close()
 
-	return valdrunner.Run(ctx, vr, "alvd-agent")
+	wg := sync.WaitGroup{}
+
+	for {
+		select {
+		case <-sigCh:
+			cancel()
+		case <-ctx.Done():
+			wg.Wait()
+			return nil
+		case err := <-ech:
+			if err != context.Canceled {
+				log.Errorf("error: %s", err)
+			}
+		}
+	}
 }

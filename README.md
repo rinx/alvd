@@ -87,7 +87,7 @@ Quick Start
 Current Status
 ---
 
-- Agent is just wrapping Vald Agent NGT.
+- Agent uses NGT service package of Vald Agent NGT.
 - uses Vald v1 API ([#826](https://github.com/vdaas/vald/pull/826)) scheme
     - Server has APIs in https://github.com/vdaas/vald/tree/feature/apis/v1-new-design/apis/proto/v1/vald
         - Unary APIs and Streaming APIs are supported.

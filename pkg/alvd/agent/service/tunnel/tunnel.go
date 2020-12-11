@@ -20,7 +20,7 @@ type Config struct {
 	ServerAddress string
 
 	AgentName string
-	AgentPort uint
+	AgentPort int
 }
 
 type Tunnel interface {
@@ -33,7 +33,7 @@ func Connect(ctx context.Context, cfg *Config) (Tunnel, <-chan error) {
 
 	headers := http.Header{
 		"X-ALVD-ID":        []string{cfg.AgentName},
-		"X-ALVD-GRPC-PORT": []string{strconv.Itoa(int(cfg.AgentPort))},
+		"X-ALVD-GRPC-PORT": []string{strconv.Itoa(cfg.AgentPort)},
 	}
 
 	go func() {

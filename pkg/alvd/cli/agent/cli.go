@@ -23,7 +23,6 @@ type Opts struct {
 	BulkInsertChunkSize    int
 	IndexPath              string
 	IndexSelfcheckInterval string
-	GRPCEnabled            bool
 	GRPCHost               string
 	GRPCPort               uint
 }
@@ -84,11 +83,6 @@ var Flags = []cli.Flag{
 		Value: "24h",
 		Usage: "selfcheck interval for alvd agent uncommitted index",
 	},
-	&cli.BoolFlag{
-		Name:  "grpc",
-		Value: true,
-		Usage: "agent gRPC API enabled",
-	},
 	&cli.StringFlag{
 		Name:  "grpc-host",
 		Value: "0.0.0.0",
@@ -114,7 +108,6 @@ func ParseOpts(c *cli.Context) *Opts {
 		BulkInsertChunkSize:    c.Int("bulk-insert-chunk-size"),
 		IndexPath:              c.String("index-path"),
 		IndexSelfcheckInterval: c.String("index-selfcheck-interval"),
-		GRPCEnabled:            c.Bool("grpc"),
 		GRPCHost:               c.String("grpc-host"),
 		GRPCPort:               c.Uint("grpc-port"),
 	}
@@ -154,7 +147,8 @@ func Run(opts *Opts) error {
 		config.WithDefaultPoolSize(10000),
 		config.WithDefaultRadius(-1.0),
 		config.WithDefaultEpsilon(0.01),
-		config.WithGRPCServer(opts.GRPCEnabled, opts.GRPCHost, opts.GRPCPort),
+		config.WithGRPCHost(opts.GRPCHost),
+		config.WithGRPCPort(opts.GRPCPort),
 	)
 	if err != nil {
 		return err

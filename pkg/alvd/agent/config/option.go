@@ -2,7 +2,6 @@ package config
 
 import (
 	"github.com/kpango/fuid"
-	valdconfig "github.com/rinx/alvd/internal/config"
 )
 
 type OptionFunc func(c *Config) error
@@ -32,7 +31,7 @@ func WithServerAddress(addr string) OptionFunc {
 func WithDimension(dimension int) OptionFunc {
 	return func(c *Config) error {
 		if dimension > 2 {
-			c.NGTConfig.NGT.Dimension = dimension
+			c.NGTConfig.Dimension = dimension
 		}
 
 		return nil
@@ -42,7 +41,7 @@ func WithDimension(dimension int) OptionFunc {
 func WithDistanceType(dt string) OptionFunc {
 	return func(c *Config) error {
 		if dt != "" {
-			c.NGTConfig.NGT.DistanceType = dt
+			c.NGTConfig.DistanceType = dt
 		}
 
 		return nil
@@ -52,7 +51,7 @@ func WithDistanceType(dt string) OptionFunc {
 func WithObjectType(ot string) OptionFunc {
 	return func(c *Config) error {
 		if ot != "" {
-			c.NGTConfig.NGT.ObjectType = ot
+			c.NGTConfig.ObjectType = ot
 		}
 
 		return nil
@@ -62,7 +61,7 @@ func WithObjectType(ot string) OptionFunc {
 func WithCreationEdgeSize(size int) OptionFunc {
 	return func(c *Config) error {
 		if size != 0 {
-			c.NGTConfig.NGT.CreationEdgeSize = size
+			c.NGTConfig.CreationEdgeSize = size
 		}
 
 		return nil
@@ -72,7 +71,7 @@ func WithCreationEdgeSize(size int) OptionFunc {
 func WithSearchEdgeSize(size int) OptionFunc {
 	return func(c *Config) error {
 		if size != 0 {
-			c.NGTConfig.NGT.SearchEdgeSize = size
+			c.NGTConfig.SearchEdgeSize = size
 		}
 
 		return nil
@@ -82,7 +81,7 @@ func WithSearchEdgeSize(size int) OptionFunc {
 func WithBulkInsertChunkSize(size int) OptionFunc {
 	return func(c *Config) error {
 		if size != 0 {
-			c.NGTConfig.NGT.BulkInsertChunkSize = 0
+			c.NGTConfig.BulkInsertChunkSize = 0
 		}
 
 		return nil
@@ -92,12 +91,12 @@ func WithBulkInsertChunkSize(size int) OptionFunc {
 func WithIndexPath(path string) OptionFunc {
 	return func(c *Config) error {
 		if path == "" {
-			c.NGTConfig.NGT.EnableInMemoryMode = true
+			c.NGTConfig.EnableInMemoryMode = true
 			return nil
 		}
 
-		c.NGTConfig.NGT.EnableInMemoryMode = false
-		c.NGTConfig.NGT.IndexPath = path
+		c.NGTConfig.EnableInMemoryMode = false
+		c.NGTConfig.IndexPath = path
 
 		return nil
 	}
@@ -105,7 +104,7 @@ func WithIndexPath(path string) OptionFunc {
 
 func WithAutoIndexCheckDuration(s string) OptionFunc {
 	return func(c *Config) error {
-		c.NGTConfig.NGT.AutoIndexCheckDuration = s
+		c.NGTConfig.AutoIndexCheckDuration = s
 
 		return nil
 	}
@@ -113,7 +112,7 @@ func WithAutoIndexCheckDuration(s string) OptionFunc {
 
 func WithAutoIndexDurationLimit(s string) OptionFunc {
 	return func(c *Config) error {
-		c.NGTConfig.NGT.AutoIndexDurationLimit = s
+		c.NGTConfig.AutoIndexDurationLimit = s
 
 		return nil
 	}
@@ -121,7 +120,7 @@ func WithAutoIndexDurationLimit(s string) OptionFunc {
 
 func WithAutoSaveIndexDuration(s string) OptionFunc {
 	return func(c *Config) error {
-		c.NGTConfig.NGT.AutoSaveIndexDuration = s
+		c.NGTConfig.AutoSaveIndexDuration = s
 
 		return nil
 	}
@@ -130,7 +129,7 @@ func WithAutoSaveIndexDuration(s string) OptionFunc {
 func WithAutoIndexLength(n int) OptionFunc {
 	return func(c *Config) error {
 		if n > 0 {
-			c.NGTConfig.NGT.AutoIndexLength = n
+			c.NGTConfig.AutoIndexLength = n
 		}
 
 		return nil
@@ -139,7 +138,7 @@ func WithAutoIndexLength(n int) OptionFunc {
 
 func WithProactiveGC(enabled bool) OptionFunc {
 	return func(c *Config) error {
-		c.NGTConfig.NGT.EnableProactiveGC = enabled
+		c.NGTConfig.EnableProactiveGC = enabled
 
 		return nil
 	}
@@ -148,7 +147,7 @@ func WithProactiveGC(enabled bool) OptionFunc {
 func WithDefaultPoolSize(size uint32) OptionFunc {
 	return func(c *Config) error {
 		if size != 0 {
-			c.NGTConfig.NGT.DefaultPoolSize = size
+			c.NGTConfig.DefaultPoolSize = size
 		}
 
 		return nil
@@ -157,7 +156,7 @@ func WithDefaultPoolSize(size uint32) OptionFunc {
 
 func WithDefaultRadius(r float32) OptionFunc {
 	return func(c *Config) error {
-		c.NGTConfig.NGT.DefaultRadius = r
+		c.NGTConfig.DefaultRadius = r
 
 		return nil
 	}
@@ -165,25 +164,26 @@ func WithDefaultRadius(r float32) OptionFunc {
 
 func WithDefaultEpsilon(e float32) OptionFunc {
 	return func(c *Config) error {
-		c.NGTConfig.NGT.DefaultEpsilon = e
+		c.NGTConfig.DefaultEpsilon = e
 
 		return nil
 	}
 }
 
-func WithGRPCServer(enable bool, host string, port uint) OptionFunc {
+func WithGRPCHost(host string) OptionFunc {
 	return func(c *Config) error {
-		if enable {
-			c.NGTConfig.Server.Servers = append(
-				c.NGTConfig.Server.Servers,
-				&valdconfig.Server{
-					Name: "grpc",
-					Host: host,
-					Port: port,
-					Mode: "GRPC",
-				},
-			)
-			c.AgentPort = port
+		if host != "" {
+			c.GRPCHost = host
+		}
+
+		return nil
+	}
+}
+
+func WithGRPCPort(port uint) OptionFunc {
+	return func(c *Config) error {
+		if port != 0 {
+			c.GRPCPort = int(port)
 		}
 
 		return nil
