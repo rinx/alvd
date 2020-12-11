@@ -48,11 +48,19 @@ jobs:
           registry: ghcr.io
           username: ${{ secrets.REPOSITORY_USER }}
           password: ${{ secrets.REPOSITORY_TOKEN }}
+      - name: extra tags
+        if: startsWith( github.ref, 'refs/tags/')
+        run: |
+          tag_name=`echo $GITHUB_REF | sed -e 's:^refs/tags/::'`
+          primary_name=`make docker/build/noavx/name`
+          secondary_name=`make docker/build/noavx/altname`
+          EXTRA_OPTS="-t ${primary_name}-${tag_name} -t ${secondary_name}-${tag_name}"
+          echo "EXTRA_OPTS=${EXTRA_OPTS}" >> $GITHUB_ENV
       - name: Build
         run: |
           make \
             DOCKER="docker buildx" \
-            DOCKER_OPTS="--platform ${PLATFORMS} --builder ${BUILDER} ${CACHE_OPTS} ${LABEL_OPTS} --push" \
+            DOCKER_OPTS="--platform ${PLATFORMS} --builder ${BUILDER} ${CACHE_OPTS} ${LABEL_OPTS} ${EXTRA_OPTS} --push" \
             docker/build/noavx
         env:
           DOCKER_BUILDKIT: 1
@@ -87,11 +95,19 @@ jobs:
           registry: ghcr.io
           username: ${{ secrets.REPOSITORY_USER }}
           password: ${{ secrets.REPOSITORY_TOKEN }}
+      - name: extra tags
+        if: startsWith( github.ref, 'refs/tags/')
+        run: |
+          tag_name=`echo $GITHUB_REF | sed -e 's:^refs/tags/::'`
+          primary_name=`make docker/build/avx2/name`
+          secondary_name=`make docker/build/avx2/altname`
+          EXTRA_OPTS="-t ${primary_name}-${tag_name} -t ${secondary_name}-${tag_name}"
+          echo "EXTRA_OPTS=${EXTRA_OPTS}" >> $GITHUB_ENV
       - name: Build
         run: |
           make \
             DOCKER="docker buildx" \
-            DOCKER_OPTS="--builder ${BUILDER} ${CACHE_OPTS} ${LABEL_OPTS} --push" \
+            DOCKER_OPTS="--builder ${BUILDER} ${CACHE_OPTS} ${LABEL_OPTS} ${EXTRA_OPTS} --push" \
             docker/build/avx2
         env:
           DOCKER_BUILDKIT: 1

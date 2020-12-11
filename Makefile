@@ -28,6 +28,9 @@ endif
 DOCKER ?= docker
 DOCKER_OPTS ?=
 
+NOAVX_TAG ?= noavx
+AVX2_TAG ?= avx2
+
 NGT_BUILD_OPTIONS ?= -DNGT_AVX_DISABLED=ON
 
 .PHONY:
@@ -50,20 +53,36 @@ docker/build: \
 	docker/build/noavx \
 	docker/build/avx2
 
+.PHONY: docker/build/noavx/name
+docker/build/noavx/name:
+	@echo $(ORG)/$(REPO):$(NOAVX_TAG)
+
+.PHONY: docker/build/noavx/altname
+docker/build/noavx/altname:
+	@echo $(ALTORG)/$(REPO):$(NOAVX_TAG)
+
 .PHONY: docker/build/noavx
 docker/build/noavx:
 	$(DOCKER) build \
 	    $(DOCKER_OPTS) \
-	    -t $(ORG)/$(REPO):noavx \
-	    -t $(ALTORG)/$(REPO):noavx . \
+	    -t $(ORG)/$(REPO):$(NOAVX_TAG) \
+	    -t $(ALTORG)/$(REPO):$(NOAVX_TAG) . \
 	    --build-arg NGT_BUILD_OPTIONS="-DNGT_AVX_DISABLED=ON"
+
+.PHONY: docker/build/avx2/name
+docker/build/avx2/name:
+	@echo $(ORG)/$(REPO):$(AVX2_TAG)
+
+.PHONY: docker/build/avx2/altname
+docker/build/avx2/altname:
+	@echo $(ALTORG)/$(REPO):$(AVX2_TAG)
 
 .PHONY: docker/build/avx2
 docker/build/avx2:
 	$(DOCKER) build \
 	    $(DOCKER_OPTS) \
-	    -t $(ORG)/$(REPO):avx2 \
-	    -t $(ALTORG)/$(REPO):avx2 . \
+	    -t $(ORG)/$(REPO):$(AVX2_TAG) \
+	    -t $(ALTORG)/$(REPO):$(AVX2_TAG) . \
 	    --build-arg NGT_BUILD_OPTIONS=""
 
 cmd/alvd/alvd: \
