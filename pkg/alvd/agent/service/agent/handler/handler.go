@@ -2,8 +2,11 @@ package handler
 
 import (
 	"context"
+	"io"
 	"strconv"
+	"sync"
 
+	"github.com/rinx/alvd/internal/errors"
 	"github.com/rinx/alvd/pkg/vald/agent/ngt/model"
 	"github.com/rinx/alvd/pkg/vald/agent/ngt/service"
 	"github.com/vdaas/vald/apis/grpc/v1/agent/core"
@@ -97,11 +100,145 @@ func toSearchResponse(dists []model.Distance, err error) (res *payload.Search_Re
 }
 
 func (s *server) StreamSearch(stream vald.Search_StreamSearchServer) error {
-	return nil
+	ctx := stream.Context()
+
+	wg := sync.WaitGroup{}
+	mu := sync.Mutex{}
+
+	errs := make([]error, 0)
+	emu := sync.Mutex{}
+
+	close := func() (err error) {
+		if len(errs) != 0 {
+			for _, e := range errs {
+				err = errors.Wrap(err, e.Error())
+			}
+		}
+
+		return err
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			wg.Wait()
+
+			return close()
+		default:
+			req, err := stream.Recv()
+			if err != nil {
+				if err == io.EOF {
+					wg.Wait()
+
+					return close()
+				}
+
+				return err
+			}
+
+			if req != nil {
+				wg.Add(1)
+
+				go func() {
+					defer wg.Done()
+
+					res, err := s.Search(ctx, req)
+					if err != nil {
+						emu.Lock()
+						defer emu.Unlock()
+
+						errs = append(errs, err)
+
+						return
+					}
+
+					mu.Lock()
+					err = stream.Send(res)
+					mu.Unlock()
+
+					if err != nil {
+						emu.Lock()
+						defer emu.Unlock()
+
+						errs = append(errs, err)
+
+						return
+					}
+				}()
+			}
+		}
+	}
 }
 
 func (s *server) StreamSearchByID(stream vald.Search_StreamSearchByIDServer) error {
-	return nil
+	ctx := stream.Context()
+
+	wg := sync.WaitGroup{}
+	mu := sync.Mutex{}
+
+	errs := make([]error, 0)
+	emu := sync.Mutex{}
+
+	close := func() (err error) {
+		if len(errs) != 0 {
+			for _, e := range errs {
+				err = errors.Wrap(err, e.Error())
+			}
+		}
+
+		return err
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			wg.Wait()
+
+			return close()
+		default:
+			req, err := stream.Recv()
+			if err != nil {
+				if err == io.EOF {
+					wg.Wait()
+
+					return close()
+				}
+
+				return err
+			}
+
+			if req != nil {
+				wg.Add(1)
+
+				go func() {
+					defer wg.Done()
+
+					res, err := s.SearchByID(ctx, req)
+					if err != nil {
+						emu.Lock()
+						defer emu.Unlock()
+
+						errs = append(errs, err)
+
+						return
+					}
+
+					mu.Lock()
+					err = stream.Send(res)
+					mu.Unlock()
+
+					if err != nil {
+						emu.Lock()
+						defer emu.Unlock()
+
+						errs = append(errs, err)
+
+						return
+					}
+				}()
+			}
+		}
+	}
 }
 
 func (s *server) MultiSearch(ctx context.Context, reqs *payload.Search_MultiRequest) (res *payload.Search_Responses, errs error) {
@@ -123,7 +260,74 @@ func (s *server) Insert(ctx context.Context, req *payload.Insert_Request) (res *
 }
 
 func (s *server) StreamInsert(stream vald.Insert_StreamInsertServer) error {
-	return nil
+	ctx := stream.Context()
+
+	wg := sync.WaitGroup{}
+	mu := sync.Mutex{}
+
+	errs := make([]error, 0)
+	emu := sync.Mutex{}
+
+	close := func() (err error) {
+		if len(errs) != 0 {
+			for _, e := range errs {
+				err = errors.Wrap(err, e.Error())
+			}
+		}
+
+		return err
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			wg.Wait()
+
+			return close()
+		default:
+			req, err := stream.Recv()
+			if err != nil {
+				if err == io.EOF {
+					wg.Wait()
+
+					return close()
+				}
+
+				return err
+			}
+
+			if req != nil {
+				wg.Add(1)
+
+				go func() {
+					defer wg.Done()
+
+					res, err := s.Insert(ctx, req)
+					if err != nil {
+						emu.Lock()
+						defer emu.Unlock()
+
+						errs = append(errs, err)
+
+						return
+					}
+
+					mu.Lock()
+					err = stream.Send(res)
+					mu.Unlock()
+
+					if err != nil {
+						emu.Lock()
+						defer emu.Unlock()
+
+						errs = append(errs, err)
+
+						return
+					}
+				}()
+			}
+		}
+	}
 }
 
 func (s *server) MultiInsert(ctx context.Context, reqs *payload.Insert_MultiRequest) (res *payload.Object_Locations, err error) {
@@ -141,7 +345,74 @@ func (s *server) Update(ctx context.Context, req *payload.Update_Request) (res *
 }
 
 func (s *server) StreamUpdate(stream vald.Update_StreamUpdateServer) error {
-	return nil
+	ctx := stream.Context()
+
+	wg := sync.WaitGroup{}
+	mu := sync.Mutex{}
+
+	errs := make([]error, 0)
+	emu := sync.Mutex{}
+
+	close := func() (err error) {
+		if len(errs) != 0 {
+			for _, e := range errs {
+				err = errors.Wrap(err, e.Error())
+			}
+		}
+
+		return err
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			wg.Wait()
+
+			return close()
+		default:
+			req, err := stream.Recv()
+			if err != nil {
+				if err == io.EOF {
+					wg.Wait()
+
+					return close()
+				}
+
+				return err
+			}
+
+			if req != nil {
+				wg.Add(1)
+
+				go func() {
+					defer wg.Done()
+
+					res, err := s.Update(ctx, req)
+					if err != nil {
+						emu.Lock()
+						defer emu.Unlock()
+
+						errs = append(errs, err)
+
+						return
+					}
+
+					mu.Lock()
+					err = stream.Send(res)
+					mu.Unlock()
+
+					if err != nil {
+						emu.Lock()
+						defer emu.Unlock()
+
+						errs = append(errs, err)
+
+						return
+					}
+				}()
+			}
+		}
+	}
 }
 
 func (s *server) MultiUpdate(ctx context.Context, reqs *payload.Update_MultiRequest) (res *payload.Object_Locations, err error) {
@@ -162,7 +433,74 @@ func (s *server) Upsert(ctx context.Context, req *payload.Upsert_Request) (*payl
 }
 
 func (s *server) StreamUpsert(stream vald.Upsert_StreamUpsertServer) error {
-	return nil
+	ctx := stream.Context()
+
+	wg := sync.WaitGroup{}
+	mu := sync.Mutex{}
+
+	errs := make([]error, 0)
+	emu := sync.Mutex{}
+
+	close := func() (err error) {
+		if len(errs) != 0 {
+			for _, e := range errs {
+				err = errors.Wrap(err, e.Error())
+			}
+		}
+
+		return err
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			wg.Wait()
+
+			return close()
+		default:
+			req, err := stream.Recv()
+			if err != nil {
+				if err == io.EOF {
+					wg.Wait()
+
+					return close()
+				}
+
+				return err
+			}
+
+			if req != nil {
+				wg.Add(1)
+
+				go func() {
+					defer wg.Done()
+
+					res, err := s.Upsert(ctx, req)
+					if err != nil {
+						emu.Lock()
+						defer emu.Unlock()
+
+						errs = append(errs, err)
+
+						return
+					}
+
+					mu.Lock()
+					err = stream.Send(res)
+					mu.Unlock()
+
+					if err != nil {
+						emu.Lock()
+						defer emu.Unlock()
+
+						errs = append(errs, err)
+
+						return
+					}
+				}()
+			}
+		}
+	}
 }
 
 func (s *server) MultiUpsert(ctx context.Context, reqs *payload.Upsert_MultiRequest) (res *payload.Object_Locations, err error) {
@@ -181,7 +519,74 @@ func (s *server) Remove(ctx context.Context, req *payload.Remove_Request) (res *
 }
 
 func (s *server) StreamRemove(stream vald.Remove_StreamRemoveServer) error {
-	return nil
+	ctx := stream.Context()
+
+	wg := sync.WaitGroup{}
+	mu := sync.Mutex{}
+
+	errs := make([]error, 0)
+	emu := sync.Mutex{}
+
+	close := func() (err error) {
+		if len(errs) != 0 {
+			for _, e := range errs {
+				err = errors.Wrap(err, e.Error())
+			}
+		}
+
+		return err
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			wg.Wait()
+
+			return close()
+		default:
+			req, err := stream.Recv()
+			if err != nil {
+				if err == io.EOF {
+					wg.Wait()
+
+					return close()
+				}
+
+				return err
+			}
+
+			if req != nil {
+				wg.Add(1)
+
+				go func() {
+					defer wg.Done()
+
+					res, err := s.Remove(ctx, req)
+					if err != nil {
+						emu.Lock()
+						defer emu.Unlock()
+
+						errs = append(errs, err)
+
+						return
+					}
+
+					mu.Lock()
+					err = stream.Send(res)
+					mu.Unlock()
+
+					if err != nil {
+						emu.Lock()
+						defer emu.Unlock()
+
+						errs = append(errs, err)
+
+						return
+					}
+				}()
+			}
+		}
+	}
 }
 
 func (s *server) MultiRemove(ctx context.Context, reqs *payload.Remove_MultiRequest) (res *payload.Object_Locations, err error) {
@@ -202,7 +607,74 @@ func (s *server) GetObject(ctx context.Context, id *payload.Object_ID) (res *pay
 }
 
 func (s *server) StreamGetObject(stream vald.Object_StreamGetObjectServer) error {
-	return nil
+	ctx := stream.Context()
+
+	wg := sync.WaitGroup{}
+	mu := sync.Mutex{}
+
+	errs := make([]error, 0)
+	emu := sync.Mutex{}
+
+	close := func() (err error) {
+		if len(errs) != 0 {
+			for _, e := range errs {
+				err = errors.Wrap(err, e.Error())
+			}
+		}
+
+		return err
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			wg.Wait()
+
+			return close()
+		default:
+			req, err := stream.Recv()
+			if err != nil {
+				if err == io.EOF {
+					wg.Wait()
+
+					return close()
+				}
+
+				return err
+			}
+
+			if req != nil {
+				wg.Add(1)
+
+				go func() {
+					defer wg.Done()
+
+					res, err := s.GetObject(ctx, req)
+					if err != nil {
+						emu.Lock()
+						defer emu.Unlock()
+
+						errs = append(errs, err)
+
+						return
+					}
+
+					mu.Lock()
+					err = stream.Send(res)
+					mu.Unlock()
+
+					if err != nil {
+						emu.Lock()
+						defer emu.Unlock()
+
+						errs = append(errs, err)
+
+						return
+					}
+				}()
+			}
+		}
+	}
 }
 
 func (s *server) CreateIndex(ctx context.Context, c *payload.Control_CreateIndexRequest) (res *payload.Empty, err error) {
