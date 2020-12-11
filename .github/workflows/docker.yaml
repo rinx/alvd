@@ -65,7 +65,7 @@ jobs:
             docker/build/noavx
         env:
           DOCKER_BUILDKIT: 1
-          PLATFORMS: "linux/amd64,linux/arm64,linux/arm/v7,linux/s390x"
+          PLATFORMS: "linux/amd64,linux/arm64,linux/arm/v7"
           BUILDER: ${{ steps.buildx.outputs.name }}
           CACHE_OPTS: "--cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,mode=max,dest=/tmp/.buildx-cache"
           LABEL_OPTS: "--label org.opencontainers.image.url=${{ github.event.repository.html_url }} --label org.opencontainers.image.source=${{ github.event.repository.html_url }} --label org.opencontainers.image.revision=${{ github.sha }}"
