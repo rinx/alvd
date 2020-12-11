@@ -54,7 +54,7 @@ docker/build: \
 docker/build/noavx:
 	$(DOCKER) build \
 	    $(DOCKER_OPTS) \
-	    -t $(ORG)/$(REPO):noavx . \
+	    -t $(ORG)/$(REPO):noavx \
 	    -t $(ALTORG)/$(REPO):noavx . \
 	    --build-arg NGT_BUILD_OPTIONS="-DNGT_AVX_DISABLED=ON"
 
@@ -62,7 +62,7 @@ docker/build/noavx:
 docker/build/avx2:
 	$(DOCKER) build \
 	    $(DOCKER_OPTS) \
-	    -t $(ORG)/$(REPO):avx2 . \
+	    -t $(ORG)/$(REPO):avx2 \
 	    -t $(ALTORG)/$(REPO):avx2 . \
 	    --build-arg NGT_BUILD_OPTIONS=""
 
