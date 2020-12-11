@@ -6,6 +6,7 @@ import (
 
 	"github.com/rinx/alvd/internal/errors"
 	"github.com/rinx/alvd/internal/log"
+	"github.com/rinx/alvd/internal/net/grpc/status"
 	"github.com/rinx/alvd/pkg/alvd/server/service/manager"
 	"github.com/vdaas/vald/apis/grpc/v1/payload"
 )
@@ -76,7 +77,9 @@ func (i *indexer) checkIndex(ctx context.Context, ech chan error) {
 
 			_, err = client.CreateIndex(ctx, &payload.Control_CreateIndexRequest{})
 			if err != nil {
-				ech <- errors.Errorf("Error occurred when creating index for %s: %s", c.Addr, err)
+				if status.Code(err) != status.FailedPrecondition {
+					ech <- errors.Errorf("Error occurred when creating index for %s: %s", c.Addr, err)
+				}
 			}
 
 			log.Debugf("create index finished for %s", c.Addr)

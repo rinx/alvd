@@ -2,11 +2,13 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"strconv"
 	"sync"
 
 	"github.com/rinx/alvd/internal/errors"
+	"github.com/rinx/alvd/internal/net/grpc/status"
 	"github.com/rinx/alvd/pkg/vald/agent/ngt/model"
 	"github.com/rinx/alvd/pkg/vald/agent/ngt/service"
 	"github.com/vdaas/vald/apis/grpc/v1/agent/core"
@@ -60,7 +62,7 @@ func (s *server) Exists(ctx context.Context, uid *payload.Object_ID) (res *paylo
 	uuid := uid.GetId()
 	oid, ok := s.ngt.Exists(uuid)
 	if !ok {
-		return nil, err
+		return nil, status.WrapWithNotFound(fmt.Sprintf("not found: %s", err), err)
 	}
 	return &payload.Object_ID{
 		Id: strconv.Itoa(int(oid)),
@@ -512,7 +514,7 @@ func (s *server) Remove(ctx context.Context, req *payload.Remove_Request) (res *
 	uuid := id.GetId()
 	err = s.ngt.Delete(uuid)
 	if err != nil {
-		return nil, err
+		return nil, status.WrapWithNotFound(fmt.Sprintf("not found: %s", err), err)
 	}
 
 	return s.newLocation(uuid), nil
@@ -597,7 +599,7 @@ func (s *server) GetObject(ctx context.Context, id *payload.Object_ID) (res *pay
 	uuid := id.GetId()
 	vec, err := s.ngt.GetObject(uuid)
 	if err != nil {
-		return nil, err
+		return nil, status.WrapWithNotFound(fmt.Sprintf("not found: %s", err), err)
 	}
 
 	return &payload.Object_Vector{
@@ -681,6 +683,10 @@ func (s *server) CreateIndex(ctx context.Context, c *payload.Control_CreateIndex
 	res = new(payload.Empty)
 	err = s.ngt.CreateIndex(ctx, c.GetPoolSize())
 	if err != nil {
+		if err == errors.ErrUncommittedIndexNotFound {
+			return nil, status.WrapWithFailedPrecondition(fmt.Sprintf("CreateIndex API failed: %s", err), err)
+		}
+
 		return nil, err
 	}
 
