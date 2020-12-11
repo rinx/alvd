@@ -1,4 +1,5 @@
 ORG = rinx
+ALTORG = ghcr.io/rinx
 REPO = alvd
 
 VALD_DIR = vald
@@ -24,6 +25,9 @@ CXXFLAGS ?= $(CFLAGS)
 EXTLDFLAGS ?=
 endif
 
+DOCKER ?= docker
+DOCKER_OPTS ?=
+
 NGT_BUILD_OPTIONS ?= -DNGT_AVX_DISABLED=ON
 
 .PHONY:
@@ -48,15 +52,19 @@ docker/build: \
 
 .PHONY: docker/build/noavx
 docker/build/noavx:
-	docker build \
-		-t $(ORG)/$(REPO):noavx . \
-		--build-arg NGT_BUILD_OPTIONS="-DNGT_AVX_DISABLED=ON"
+	$(DOCKER) build \
+	    $(DOCKER_OPTS) \
+	    -t $(ORG)/$(REPO):noavx . \
+	    -t $(ALTORG)/$(REPO):noavx . \
+	    --build-arg NGT_BUILD_OPTIONS="-DNGT_AVX_DISABLED=ON"
 
 .PHONY: docker/build/avx2
 docker/build/avx2:
-	docker build \
-		-t $(ORG)/$(REPO):avx2 . \
-		--build-arg NGT_BUILD_OPTIONS=""
+	$(DOCKER) build \
+	    $(DOCKER_OPTS) \
+	    -t $(ORG)/$(REPO):avx2 . \
+	    -t $(ALTORG)/$(REPO):avx2 . \
+	    --build-arg NGT_BUILD_OPTIONS=""
 
 cmd/alvd/alvd: \
 	ngt/install \
