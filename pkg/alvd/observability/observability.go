@@ -2,6 +2,7 @@ package observability
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -19,7 +20,9 @@ type Obs interface {
 	Start(ctx context.Context) error
 }
 
-func New() (Obs, error) {
+func New(cfg *Config) (Obs, error) {
+	addr := fmt.Sprintf("%s:%d", cfg.MetricsHost, cfg.MetricsPort)
+
 	prom, err := prometheus.New()
 	if err != nil {
 		return nil, err
@@ -27,7 +30,7 @@ func New() (Obs, error) {
 
 	return &obs{
 		prometheus:       prom,
-		metricServerAddr: "0.0.0.0:9090",
+		metricServerAddr: addr,
 	}, nil
 }
 

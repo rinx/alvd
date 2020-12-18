@@ -26,6 +26,8 @@ type Opts struct {
 	IndexSelfcheckInterval string
 	GRPCHost               string
 	GRPCPort               uint
+	MetricsHost            string
+	MetricsPort            uint
 }
 
 var Flags = []cli.Flag{
@@ -94,6 +96,16 @@ var Flags = []cli.Flag{
 		Value: 8081,
 		Usage: "agent gRPC API port",
 	},
+	&cli.StringFlag{
+		Name:  "metrics-host",
+		Value: "0.0.0.0",
+		Usage: "metrics server host",
+	},
+	&cli.UintFlag{
+		Name:  "metrics-port",
+		Value: 9090,
+		Usage: "metrics server port",
+	},
 }
 
 func ParseOpts(c *cli.Context) *Opts {
@@ -111,6 +123,8 @@ func ParseOpts(c *cli.Context) *Opts {
 		IndexSelfcheckInterval: c.String("index-selfcheck-interval"),
 		GRPCHost:               c.String("grpc-host"),
 		GRPCPort:               c.Uint("grpc-port"),
+		MetricsHost:            c.String("metrics-host"),
+		MetricsPort:            c.Uint("metrics-port"),
 	}
 }
 
@@ -132,7 +146,12 @@ func NewCommand() *cli.Command {
 
 			ctx := context.Background()
 
-			obs, err := observability.New()
+			obs, err := observability.New(
+				&observability.Config{
+					MetricsHost: opts.MetricsHost,
+					MetricsPort: opts.MetricsPort,
+				},
+			)
 			if err != nil {
 				return err
 			}

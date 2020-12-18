@@ -89,7 +89,12 @@ func NewCommand() *cli.Command {
 
 			ctx := context.Background()
 
-			obs, err := observability.New()
+			obs, err := observability.New(
+				&observability.Config{
+					MetricsHost: opts.MetricsHost,
+					MetricsPort: opts.MetricsPort,
+				},
+			)
 			if err != nil {
 				return err
 			}
