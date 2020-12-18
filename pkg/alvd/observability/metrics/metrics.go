@@ -37,11 +37,11 @@ type Meter interface {
 	Meter() metric.Meter
 }
 
-func Init() {
+func Init(interval time.Duration) {
 	once.Do(func() {
 		instance = &meter{
 			meter:    otel.Meter("rinx.github.io/alvd"),
-			interval: 5 * time.Second,
+			interval: interval,
 			mch:      make(chan metric.Measurement, 10),
 		}
 	})

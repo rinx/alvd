@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/rinx/alvd/internal/log"
@@ -12,8 +13,9 @@ import (
 )
 
 type obs struct {
-	prometheus       prometheus.Prometheus
-	metricServerAddr string
+	prometheus             prometheus.Prometheus
+	metricsServerAddr      string
+	metricsCollectInterval time.Duration
 }
 
 type Obs interface {
@@ -28,14 +30,20 @@ func New(cfg *Config) (Obs, error) {
 		return nil, err
 	}
 
+	interval, err := time.ParseDuration(cfg.MetricsCollectInterval)
+	if err != nil {
+		return nil, err
+	}
+
 	return &obs{
-		prometheus:       prom,
-		metricServerAddr: addr,
+		prometheus:             prom,
+		metricsServerAddr:      addr,
+		metricsCollectInterval: interval,
 	}, nil
 }
 
 func (o *obs) Start(ctx context.Context) (err error) {
-	metrics.Init()
+	metrics.Init(o.metricsCollectInterval)
 
 	sech := o.StartMetricServer(ctx)
 	mech := metrics.GetMeter().Start(ctx)
@@ -69,8 +77,8 @@ func (o *obs) StartMetricServer(ctx context.Context) <-chan error {
 		defer close(ech)
 
 		for {
-			log.Infof("metrics server starting on %s", o.metricServerAddr)
-			err := http.ListenAndServe(o.metricServerAddr, router)
+			log.Infof("metrics server starting on %s", o.metricsServerAddr)
+			err := http.ListenAndServe(o.metricsServerAddr, router)
 			if err != nil {
 				ech <- err
 			}

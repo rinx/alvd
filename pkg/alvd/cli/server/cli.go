@@ -91,8 +91,9 @@ func NewCommand() *cli.Command {
 
 			obs, err := observability.New(
 				&observability.Config{
-					MetricsHost: opts.MetricsHost,
-					MetricsPort: opts.MetricsPort,
+					MetricsHost:            opts.MetricsHost,
+					MetricsPort:            opts.MetricsPort,
+					MetricsCollectInterval: opts.MetricsCollectInterval,
 				},
 			)
 			if err != nil {

@@ -28,6 +28,7 @@ type Opts struct {
 	GRPCPort               uint
 	MetricsHost            string
 	MetricsPort            uint
+	MetricsCollectInterval string
 }
 
 var Flags = []cli.Flag{
@@ -106,6 +107,11 @@ var Flags = []cli.Flag{
 		Value: 9090,
 		Usage: "metrics server port",
 	},
+	&cli.StringFlag{
+		Name:  "metrics-collect-interval",
+		Value: "5s",
+		Usage: "interval for collecting metrics",
+	},
 }
 
 func ParseOpts(c *cli.Context) *Opts {
@@ -125,6 +131,7 @@ func ParseOpts(c *cli.Context) *Opts {
 		GRPCPort:               c.Uint("grpc-port"),
 		MetricsHost:            c.String("metrics-host"),
 		MetricsPort:            c.Uint("metrics-port"),
+		MetricsCollectInterval: c.String("metrics-collect-interval"),
 	}
 }
 
@@ -148,8 +155,9 @@ func NewCommand() *cli.Command {
 
 			obs, err := observability.New(
 				&observability.Config{
-					MetricsHost: opts.MetricsHost,
-					MetricsPort: opts.MetricsPort,
+					MetricsHost:            opts.MetricsHost,
+					MetricsPort:            opts.MetricsPort,
+					MetricsCollectInterval: opts.MetricsCollectInterval,
 				},
 			)
 			if err != nil {

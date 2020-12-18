@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rinx/alvd/internal/log"
+	"github.com/rinx/alvd/pkg/alvd/observability/metrics"
 	"github.com/rinx/alvd/pkg/alvd/server/config"
 	"github.com/rinx/alvd/pkg/alvd/server/service/gateway"
 	"github.com/rinx/alvd/pkg/alvd/server/service/gateway/handler"
@@ -13,6 +14,8 @@ import (
 	"github.com/rinx/alvd/pkg/alvd/server/service/manager"
 	"github.com/rinx/alvd/pkg/alvd/server/service/tunnel"
 	"github.com/vdaas/vald/apis/grpc/v1/vald"
+	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/unit"
 )
 
 type daemon struct {
@@ -102,6 +105,11 @@ func (d *daemon) Start(ctx context.Context) <-chan error {
 		}
 	}()
 
+	err := d.registerMetrics()
+	if err != nil {
+		ech <- err
+	}
+
 	return ech
 }
 
@@ -141,6 +149,24 @@ func (d *daemon) Close() (err error) {
 	d.manager.Close()
 
 	d.cancel()
+
+	return nil
+}
+
+func (d *daemon) registerMetrics() (err error) {
+	meter := metrics.GetMeter()
+
+	_, err = meter.Meter().NewInt64UpDownSumObserver(
+		"rinx.github.io/alvd/server/agent/count",
+		func(_ context.Context, result metric.Int64ObserverResult) {
+			result.Observe(int64(d.manager.GetAgentCount()))
+		},
+		metric.WithDescription("number of connected agents"),
+		metric.WithUnit(unit.Dimensionless),
+	)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
