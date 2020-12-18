@@ -7,6 +7,7 @@ import (
 	"github.com/rinx/alvd/internal/log/level"
 	"github.com/rinx/alvd/pkg/alvd/agent/config"
 	"github.com/rinx/alvd/pkg/alvd/agent/runner"
+	"github.com/rinx/alvd/pkg/alvd/observability"
 
 	cli "github.com/urfave/cli/v2"
 )
@@ -119,16 +120,34 @@ func NewCommand() *cli.Command {
 		Usage: "Start agent",
 		Flags: Flags,
 		Action: func(c *cli.Context) error {
-			return Run(ParseOpts(c))
+			opts := ParseOpts(c)
+
+			log.Init(log.WithLevel(level.Atol(opts.LogLevel).String()))
+			log.Info("start alvd agent")
+
+			cfg, err := ToConfig(opts)
+			if err != nil {
+				return err
+			}
+
+			ctx := context.Background()
+
+			obs, err := observability.New()
+			if err != nil {
+				return err
+			}
+
+			err = obs.Start(ctx)
+			if err != nil {
+				return err
+			}
+
+			return Run(ctx, cfg)
 		},
 	}
 }
 
-func Run(opts *Opts) error {
-	log.Init(log.WithLevel(level.Atol(opts.LogLevel).String()))
-
-	log.Info("start alvd agent")
-
+func ToConfig(opts *Opts) (*config.Config, error) {
 	cfg, err := config.New(
 		config.WithAgentName(opts.AgentName),
 		config.WithServerAddress(opts.ServerAddress),
@@ -151,15 +170,17 @@ func Run(opts *Opts) error {
 		config.WithGRPCPort(opts.GRPCPort),
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	return cfg, nil
+}
+
+func Run(ctx context.Context, cfg *config.Config) error {
 	r, err := runner.New(cfg)
 	if err != nil {
 		return err
 	}
-
-	ctx := context.Background()
 
 	return r.Start(ctx)
 }

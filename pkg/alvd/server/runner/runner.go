@@ -50,7 +50,15 @@ func (r *runner) Start(ctx context.Context) error {
 
 		go func() {
 			defer wg.Done()
-			agent.Run(r.cfg.AgentOpts)
+			cfg, err := agent.ToConfig(r.cfg.AgentOpts)
+			if err != nil {
+				log.Fatalf("failed to start Agent: %s", err)
+			}
+
+			err = agent.Run(ctx, cfg)
+			if err != nil {
+				log.Errorf("error on Agent: %s", err)
+			}
 		}()
 	}
 

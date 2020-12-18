@@ -49,7 +49,7 @@ require (
 	github.com/gocql/gocql v0.0.0-20200131111108-92af2e088537
 	github.com/gocraft/dbr/v2 v2.7.0
 	github.com/gogo/protobuf v1.3.1
-	github.com/google/go-cmp v0.5.2
+	github.com/google/go-cmp v0.5.4
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/go-version v1.2.1
 	github.com/json-iterator/go v1.1.10
@@ -65,6 +65,8 @@ require (
 	github.com/urfave/cli/v2 v2.2.0
 	github.com/vdaas/vald v0.0.62
 	go.opencensus.io v0.22.5
+	go.opentelemetry.io/otel v0.15.0
+	go.opentelemetry.io/otel/exporters/metric/prometheus v0.15.0
 	go.uber.org/automaxprocs v1.3.0
 	go.uber.org/goleak v1.1.10
 	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b

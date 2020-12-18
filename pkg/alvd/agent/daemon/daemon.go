@@ -9,7 +9,10 @@ import (
 	"github.com/rinx/alvd/pkg/alvd/agent/service/agent"
 	"github.com/rinx/alvd/pkg/alvd/agent/service/agent/handler"
 	"github.com/rinx/alvd/pkg/alvd/agent/service/tunnel"
+	"github.com/rinx/alvd/pkg/alvd/observability/metrics"
 	"github.com/rinx/alvd/pkg/vald/agent/ngt/service"
+	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/unit"
 )
 
 type daemon struct {
@@ -106,6 +109,11 @@ func (d *daemon) Start(ctx context.Context) <-chan error {
 		}
 	}()
 
+	err := d.registerMetrics()
+	if err != nil {
+		ech <- err
+	}
+
 	return ech
 }
 
@@ -113,6 +121,36 @@ func (d *daemon) Close() error {
 	defer d.tunnel.Close()
 
 	defer d.cancel()
+
+	return nil
+}
+
+func (d *daemon) registerMetrics() (err error) {
+	meter := metrics.GetMeter()
+
+	_, err = meter.Meter().NewInt64UpDownSumObserver(
+		"rinx.github.io/alvd/agent/ngt/stored",
+		func(_ context.Context, result metric.Int64ObserverResult) {
+			result.Observe(int64(d.ngt.Len()))
+		},
+		metric.WithDescription("NGT number of stored indices"),
+		metric.WithUnit(unit.Dimensionless),
+	)
+	if err != nil {
+		return err
+	}
+
+	_, err = meter.Meter().NewInt64UpDownSumObserver(
+		"rinx.github.io/alvd/agent/ngt/uncommitted",
+		func(_ context.Context, result metric.Int64ObserverResult) {
+			result.Observe(int64(d.ngt.InsertVCacheLen() + d.ngt.DeleteVCacheLen()))
+		},
+		metric.WithDescription("NGT number of uncommitted indices"),
+		metric.WithUnit(unit.Dimensionless),
+	)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
