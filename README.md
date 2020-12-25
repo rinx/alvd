@@ -12,7 +12,7 @@ A lightweight distributed vector search engine based on [Vald](https://vald.vdaa
 - single binary (less than 20MB)
 - easy to run (can be configured by command-line options)
 - consists of Agent and Server
-    - alvd has same features that Vald's gateway-lb + discoverer and agent-ngt have.
+    - alvd has almost same features that Vald's gateway-lb + discoverer and agent-ngt have.
 
 alvd is highly inspired by [k3s](https://k3s.io) project.
 
