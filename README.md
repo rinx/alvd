@@ -94,6 +94,19 @@ The images tagged by `noavx` are built for amd64, arm64 and armv7 architectures.
 - [ghcr.io/rinx/alvd](https://github.com/users/rinx/packages/container/package/alvd)
 - [rinx/alvd](https://hub.docker.com/r/rinx/alvd)
 
+Running on Kubernetes
+---
+
+There are example manifests in [k8s](https://github.com/rinx/alvd/tree/master/k8s) directory.
+
+```sh
+$ # create new namespace
+$ kubectl create ns alvd
+$ # change current namespace
+$ kubectl config set-context $(kubectl config current-context) --namespace=alvd
+$ # deploy server and agent
+$ kubectl apply -f k8s
+```
 
 Current Status
 ---
