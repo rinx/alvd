@@ -4,7 +4,7 @@ REPO = alvd
 
 VALD_DIR = vald
 VALD_REPO = vdaas/vald
-VALD_BRANCH = feature/apis/v1-new-design
+VALD_BRANCH = master
 VALD_DEPTH = 1
 
 NGT_VERSION=1.12.1

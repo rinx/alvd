@@ -147,16 +147,25 @@ func (s *server) StreamSearch(stream vald.Search_StreamSearchServer) error {
 					res, err := s.Search(ctx, req)
 					if err != nil {
 						emu.Lock()
-						defer emu.Unlock()
-
 						errs = append(errs, err)
+						emu.Unlock()
 
-						return
+						mu.Lock()
+						err = stream.Send(&payload.Search_StreamResponse{
+							Payload: &payload.Search_StreamResponse_Error{
+								Error: status.FromError(err),
+							},
+						})
+						mu.Unlock()
+					} else {
+						mu.Lock()
+						err = stream.Send(&payload.Search_StreamResponse{
+							Payload: &payload.Search_StreamResponse_Response{
+								Response: res,
+							},
+						})
+						mu.Unlock()
 					}
-
-					mu.Lock()
-					err = stream.Send(res)
-					mu.Unlock()
 
 					if err != nil {
 						emu.Lock()
@@ -218,16 +227,25 @@ func (s *server) StreamSearchByID(stream vald.Search_StreamSearchByIDServer) err
 					res, err := s.SearchByID(ctx, req)
 					if err != nil {
 						emu.Lock()
-						defer emu.Unlock()
-
 						errs = append(errs, err)
+						emu.Unlock()
 
-						return
+						mu.Lock()
+						err = stream.Send(&payload.Search_StreamResponse{
+							Payload: &payload.Search_StreamResponse_Error{
+								Error: status.FromError(err),
+							},
+						})
+						mu.Unlock()
+					} else {
+						mu.Lock()
+						err = stream.Send(&payload.Search_StreamResponse{
+							Payload: &payload.Search_StreamResponse_Response{
+								Response: res,
+							},
+						})
+						mu.Unlock()
 					}
-
-					mu.Lock()
-					err = stream.Send(res)
-					mu.Unlock()
 
 					if err != nil {
 						emu.Lock()
@@ -307,16 +325,25 @@ func (s *server) StreamInsert(stream vald.Insert_StreamInsertServer) error {
 					res, err := s.Insert(ctx, req)
 					if err != nil {
 						emu.Lock()
-						defer emu.Unlock()
-
 						errs = append(errs, err)
+						emu.Unlock()
 
-						return
+						mu.Lock()
+						err = stream.Send(&payload.Object_StreamLocation{
+							Payload: &payload.Object_StreamLocation_Error{
+								Error: status.FromError(err),
+							},
+						})
+						mu.Unlock()
+					} else {
+						mu.Lock()
+						err = stream.Send(&payload.Object_StreamLocation{
+							Payload: &payload.Object_StreamLocation_Location{
+								Location: res,
+							},
+						})
+						mu.Unlock()
 					}
-
-					mu.Lock()
-					err = stream.Send(res)
-					mu.Unlock()
 
 					if err != nil {
 						emu.Lock()
@@ -392,16 +419,25 @@ func (s *server) StreamUpdate(stream vald.Update_StreamUpdateServer) error {
 					res, err := s.Update(ctx, req)
 					if err != nil {
 						emu.Lock()
-						defer emu.Unlock()
-
 						errs = append(errs, err)
+						emu.Unlock()
 
-						return
+						mu.Lock()
+						err = stream.Send(&payload.Object_StreamLocation{
+							Payload: &payload.Object_StreamLocation_Error{
+								Error: status.FromError(err),
+							},
+						})
+						mu.Unlock()
+					} else {
+						mu.Lock()
+						err = stream.Send(&payload.Object_StreamLocation{
+							Payload: &payload.Object_StreamLocation_Location{
+								Location: res,
+							},
+						})
+						mu.Unlock()
 					}
-
-					mu.Lock()
-					err = stream.Send(res)
-					mu.Unlock()
 
 					if err != nil {
 						emu.Lock()
@@ -480,16 +516,25 @@ func (s *server) StreamUpsert(stream vald.Upsert_StreamUpsertServer) error {
 					res, err := s.Upsert(ctx, req)
 					if err != nil {
 						emu.Lock()
-						defer emu.Unlock()
-
 						errs = append(errs, err)
+						emu.Unlock()
 
-						return
+						mu.Lock()
+						err = stream.Send(&payload.Object_StreamLocation{
+							Payload: &payload.Object_StreamLocation_Error{
+								Error: status.FromError(err),
+							},
+						})
+						mu.Unlock()
+					} else {
+						mu.Lock()
+						err = stream.Send(&payload.Object_StreamLocation{
+							Payload: &payload.Object_StreamLocation_Location{
+								Location: res,
+							},
+						})
+						mu.Unlock()
 					}
-
-					mu.Lock()
-					err = stream.Send(res)
-					mu.Unlock()
 
 					if err != nil {
 						emu.Lock()
@@ -566,16 +611,25 @@ func (s *server) StreamRemove(stream vald.Remove_StreamRemoveServer) error {
 					res, err := s.Remove(ctx, req)
 					if err != nil {
 						emu.Lock()
-						defer emu.Unlock()
-
 						errs = append(errs, err)
+						emu.Unlock()
 
-						return
+						mu.Lock()
+						err = stream.Send(&payload.Object_StreamLocation{
+							Payload: &payload.Object_StreamLocation_Error{
+								Error: status.FromError(err),
+							},
+						})
+						mu.Unlock()
+					} else {
+						mu.Lock()
+						err = stream.Send(&payload.Object_StreamLocation{
+							Payload: &payload.Object_StreamLocation_Location{
+								Location: res,
+							},
+						})
+						mu.Unlock()
 					}
-
-					mu.Lock()
-					err = stream.Send(res)
-					mu.Unlock()
 
 					if err != nil {
 						emu.Lock()
@@ -654,16 +708,25 @@ func (s *server) StreamGetObject(stream vald.Object_StreamGetObjectServer) error
 					res, err := s.GetObject(ctx, req)
 					if err != nil {
 						emu.Lock()
-						defer emu.Unlock()
-
 						errs = append(errs, err)
+						emu.Unlock()
 
-						return
+						mu.Lock()
+						err = stream.Send(&payload.Object_StreamVector{
+							Payload: &payload.Object_StreamVector_Error{
+								Error: status.FromError(err),
+							},
+						})
+						mu.Unlock()
+					} else {
+						mu.Lock()
+						err = stream.Send(&payload.Object_StreamVector{
+							Payload: &payload.Object_StreamVector_Vector{
+								Vector: res,
+							},
+						})
+						mu.Unlock()
 					}
-
-					mu.Lock()
-					err = stream.Send(res)
-					mu.Unlock()
 
 					if err != nil {
 						emu.Lock()

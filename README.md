@@ -112,8 +112,11 @@ Current Status
 ---
 
 - Agent uses NGT service package of Vald Agent NGT.
-- uses Vald v1 API ([#826](https://github.com/vdaas/vald/pull/826)) scheme
-    - Server has APIs in https://github.com/vdaas/vald/tree/feature/apis/v1-new-design/apis/proto/v1/vald
+- uses Vald v1 API on master branch (https://github.com/vdaas/vald/tree/master/apis/proto/v1).
+    - Server has APIs in https://github.com/vdaas/vald/tree/master/apis/proto/v1/vald
+        - Unary APIs and Streaming APIs are supported.
+        - MultiXXX APIs are not supported.
+    - Agent has APIs in https://github.com/vdaas/vald/tree/master/apis/proto/v1/vald and https://github.com/vdaas/vald/tree/master/apis/proto/v1/agent/core.
         - Unary APIs and Streaming APIs are supported.
         - MultiXXX APIs are not supported.
 

@@ -36,7 +36,7 @@ replace (
 )
 
 require (
-	cloud.google.com/go v0.65.0
+	cloud.google.com/go v0.72.0
 	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
 	contrib.go.opencensus.io/exporter/jaeger v0.2.1
 	contrib.go.opencensus.io/exporter/prometheus v0.2.0
@@ -47,7 +47,7 @@ require (
 	github.com/go-redis/redis/v7 v7.4.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gocql/gocql v0.0.0-20200131111108-92af2e088537
-	github.com/gocraft/dbr/v2 v2.7.0
+	github.com/gocraft/dbr/v2 v2.7.1
 	github.com/gogo/protobuf v1.3.1
 	github.com/google/go-cmp v0.5.4
 	github.com/gorilla/mux v1.8.0
@@ -58,6 +58,7 @@ require (
 	github.com/kpango/fuid v0.0.0-20200823100533-287aa95e0641
 	github.com/kpango/gache v1.2.3
 	github.com/kpango/glg v1.5.1
+	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/pierrec/lz4/v3 v3.3.2
 	github.com/rancher/remotedialer v0.2.5
 	github.com/scylladb/gocqlx v1.5.0
@@ -69,14 +70,14 @@ require (
 	go.opentelemetry.io/otel/exporters/metric/prometheus v0.15.0
 	go.uber.org/automaxprocs v1.3.0
 	go.uber.org/goleak v1.1.10
-	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
-	golang.org/x/sys v0.0.0-20201110211018-35f3e6cf4a65
-	google.golang.org/api v0.35.0
-	google.golang.org/grpc v1.33.2
-	gopkg.in/yaml.v2 v2.3.0
-	k8s.io/api v0.18.9
-	k8s.io/apimachinery v0.18.9
-	k8s.io/client-go v0.18.9
+	golang.org/x/net v0.0.0-20201224014010-6772e930b67b
+	golang.org/x/sys v0.0.0-20210113181707-4bcb84eeeb78
+	google.golang.org/api v0.36.0
+	google.golang.org/grpc v1.34.0
+	gopkg.in/yaml.v2 v2.4.0
+	k8s.io/api v0.20.2
+	k8s.io/apimachinery v0.20.2
+	k8s.io/client-go v0.20.2
 	k8s.io/metrics v0.0.0-00010101000000-000000000000
 	sigs.k8s.io/controller-runtime v0.0.0-00010101000000-000000000000
 )
