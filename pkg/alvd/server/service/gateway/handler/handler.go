@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/rinx/alvd/internal/errors"
+	"github.com/rinx/alvd/internal/net/grpc/codes"
 	"github.com/rinx/alvd/internal/net/grpc/status"
 	"github.com/rinx/alvd/pkg/alvd/server/service/manager"
 	"github.com/vdaas/vald/apis/grpc/v1/payload"
@@ -236,10 +237,17 @@ func (s *server) StreamSearch(stream vald.Search_StreamSearchServer) error {
 						errs = append(errs, err)
 						emu.Unlock()
 
+						st, ok := status.FromError(err)
+
+						if !ok {
+							st = status.New(codes.Internal, errors.Wrap(err, "failed to parse grpc status from error").Error())
+							err = errors.Wrap(st.Err(), err.Error())
+						}
+
 						mu.Lock()
 						err = stream.Send(&payload.Search_StreamResponse{
-							Payload: &payload.Search_StreamResponse_Error{
-								Error: status.FromError(err),
+							Payload: &payload.Search_StreamResponse_Status{
+								Status: st.Proto(),
 							},
 						})
 						mu.Unlock()
@@ -316,10 +324,17 @@ func (s *server) StreamSearchByID(stream vald.Search_StreamSearchByIDServer) err
 						errs = append(errs, err)
 						emu.Unlock()
 
+						st, ok := status.FromError(err)
+
+						if !ok {
+							st = status.New(codes.Internal, errors.Wrap(err, "failed to parse grpc status from error").Error())
+							err = errors.Wrap(st.Err(), err.Error())
+						}
+
 						mu.Lock()
 						err = stream.Send(&payload.Search_StreamResponse{
-							Payload: &payload.Search_StreamResponse_Error{
-								Error: status.FromError(err),
+							Payload: &payload.Search_StreamResponse_Status{
+								Status: st.Proto(),
 							},
 						})
 						mu.Unlock()
@@ -449,10 +464,17 @@ func (s *server) StreamInsert(stream vald.Insert_StreamInsertServer) error {
 						errs = append(errs, err)
 						emu.Unlock()
 
+						st, ok := status.FromError(err)
+
+						if !ok {
+							st = status.New(codes.Internal, errors.Wrap(err, "failed to parse grpc status from error").Error())
+							err = errors.Wrap(st.Err(), err.Error())
+						}
+
 						mu.Lock()
 						err = stream.Send(&payload.Object_StreamLocation{
-							Payload: &payload.Object_StreamLocation_Error{
-								Error: status.FromError(err),
+							Payload: &payload.Object_StreamLocation_Status{
+								Status: st.Proto(),
 							},
 						})
 						mu.Unlock()
@@ -566,10 +588,17 @@ func (s *server) StreamUpdate(stream vald.Update_StreamUpdateServer) error {
 						errs = append(errs, err)
 						emu.Unlock()
 
+						st, ok := status.FromError(err)
+
+						if !ok {
+							st = status.New(codes.Internal, errors.Wrap(err, "failed to parse grpc status from error").Error())
+							err = errors.Wrap(st.Err(), err.Error())
+						}
+
 						mu.Lock()
 						err = stream.Send(&payload.Object_StreamLocation{
-							Payload: &payload.Object_StreamLocation_Error{
-								Error: status.FromError(err),
+							Payload: &payload.Object_StreamLocation_Status{
+								Status: st.Proto(),
 							},
 						})
 						mu.Unlock()
@@ -685,10 +714,17 @@ func (s *server) StreamUpsert(stream vald.Upsert_StreamUpsertServer) error {
 						errs = append(errs, err)
 						emu.Unlock()
 
+						st, ok := status.FromError(err)
+
+						if !ok {
+							st = status.New(codes.Internal, errors.Wrap(err, "failed to parse grpc status from error").Error())
+							err = errors.Wrap(st.Err(), err.Error())
+						}
+
 						mu.Lock()
 						err = stream.Send(&payload.Object_StreamLocation{
-							Payload: &payload.Object_StreamLocation_Error{
-								Error: status.FromError(err),
+							Payload: &payload.Object_StreamLocation_Status{
+								Status: st.Proto(),
 							},
 						})
 						mu.Unlock()
@@ -803,10 +839,17 @@ func (s *server) StreamRemove(stream vald.Remove_StreamRemoveServer) error {
 						errs = append(errs, err)
 						emu.Unlock()
 
+						st, ok := status.FromError(err)
+
+						if !ok {
+							st = status.New(codes.Internal, errors.Wrap(err, "failed to parse grpc status from error").Error())
+							err = errors.Wrap(st.Err(), err.Error())
+						}
+
 						mu.Lock()
 						err = stream.Send(&payload.Object_StreamLocation{
-							Payload: &payload.Object_StreamLocation_Error{
-								Error: status.FromError(err),
+							Payload: &payload.Object_StreamLocation_Status{
+								Status: st.Proto(),
 							},
 						})
 						mu.Unlock()
@@ -923,10 +966,17 @@ func (s *server) StreamGetObject(stream vald.Object_StreamGetObjectServer) error
 						errs = append(errs, err)
 						emu.Unlock()
 
+						st, ok := status.FromError(err)
+
+						if !ok {
+							st = status.New(codes.Internal, errors.Wrap(err, "failed to parse grpc status from error").Error())
+							err = errors.Wrap(st.Err(), err.Error())
+						}
+
 						mu.Lock()
 						err = stream.Send(&payload.Object_StreamVector{
-							Payload: &payload.Object_StreamVector_Error{
-								Error: status.FromError(err),
+							Payload: &payload.Object_StreamVector_Status{
+								Status: st.Proto(),
 							},
 						})
 						mu.Unlock()
