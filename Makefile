@@ -7,7 +7,7 @@ VALD_REPO = vdaas/vald
 VALD_BRANCH = master
 VALD_DEPTH = 1
 
-NGT_VERSION=1.12.1
+NGT_VERSION=1.13.1
 
 GOARCH = $(shell go env GOARCH)
 

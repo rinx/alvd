@@ -175,8 +175,10 @@ func (s *server) SearchByID(
 	ctx context.Context,
 	req *payload.Search_IDRequest,
 ) (res *payload.Search_Response, err error) {
-	vec, err := s.GetObject(ctx, &payload.Object_ID{
-		Id: req.GetId(),
+	vec, err := s.GetObject(ctx, &payload.Object_VectorRequest{
+		Id: &payload.Object_ID{
+			Id: req.GetId(),
+		},
 	})
 	if err != nil {
 		return nil, err
@@ -886,14 +888,14 @@ func (s *server) MultiRemove(
 
 func (s *server) GetObject(
 	ctx context.Context,
-	id *payload.Object_ID,
+	req *payload.Object_VectorRequest,
 ) (vec *payload.Object_Vector, err error) {
 	ctx, cancel := context.WithCancel(ctx)
 
 	var once sync.Once
 
 	err = s.manager.Broadcast(ctx, func(ctx context.Context, client vald.Client) error {
-		res, err := client.GetObject(ctx, id)
+		res, err := client.GetObject(ctx, req)
 		if err != nil {
 			return err
 		}

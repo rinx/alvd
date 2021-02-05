@@ -692,8 +692,8 @@ func (s *server) MultiRemove(ctx context.Context, reqs *payload.Remove_MultiRequ
 	return nil, nil
 }
 
-func (s *server) GetObject(ctx context.Context, id *payload.Object_ID) (res *payload.Object_Vector, err error) {
-	uuid := id.GetId()
+func (s *server) GetObject(ctx context.Context, req *payload.Object_VectorRequest) (res *payload.Object_Vector, err error) {
+	uuid := req.GetId().GetId()
 	vec, err := s.ngt.GetObject(uuid)
 	if err != nil {
 		return nil, status.WrapWithNotFound(fmt.Sprintf("not found: %s", err), err)
