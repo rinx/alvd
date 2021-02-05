@@ -2,7 +2,7 @@ name: Run gitwerk
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   semver-auto:

@@ -97,7 +97,7 @@ The images tagged by `noavx` are built for amd64, arm64 and armv7 architectures.
 Running on Kubernetes
 ---
 
-There are example manifests in [k8s](https://github.com/rinx/alvd/tree/master/k8s) directory.
+There are example manifests in [k8s](https://github.com/rinx/alvd/tree/main/k8s) directory.
 
 ```sh
 $ # create new namespace
