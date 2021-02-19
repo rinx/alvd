@@ -71,7 +71,7 @@ Quick Start
     $ # ./alvd agent --server 0.0.0.0:8000 --grpc-port 808{3,4,5} --metrics-port=909{2,3,4}
     ```
 5. Now we can access the alvd Server's gRPC API (`host-of-server-node:8080`) using Vald v1 clients.
-    If you don't have one, you can use [valdcli](https://github.com/vdaas/vald-client-clj) (this CLI is built for linux-amd64).
+    If you don't have one, you can use [valdcli](https://github.com/vdaas/vald-client-clj) (this CLI is built for linux-amd64 and macos-amd64).
     ```sh
     $ # insert 100 vectors (dimension: 784) with random IDs
     $ valdcli rand-vecs -d 784 -n 100 --with-ids | valdcli -h host-of-server-node -p 8080 stream-insert
@@ -119,6 +119,8 @@ Current Status
     - Agent has APIs in https://github.com/vdaas/vald/tree/master/apis/proto/v1/vald and https://github.com/vdaas/vald/tree/master/apis/proto/v1/agent/core.
         - Unary APIs and Streaming APIs are supported.
         - MultiXXX APIs are not supported.
+- Currently, it doesn't support high-availability (HA). Only single Server (with one or more Agents) cluster of alvd can be deployed.
+    - In the near future, HA cluster will be supported.
 
 
 Build
