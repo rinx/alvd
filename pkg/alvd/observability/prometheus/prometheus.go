@@ -3,8 +3,8 @@ package prometheus
 import (
 	"net/http"
 
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/metric/prometheus"
+	"go.opentelemetry.io/otel/metric/global"
 )
 
 type prom struct {
@@ -23,7 +23,7 @@ func New() (Prometheus, error) {
 		return nil, err
 	}
 
-	otel.SetMeterProvider(exporter.MeterProvider())
+	global.SetMeterProvider(exporter.MeterProvider())
 
 	return &prom{
 		exporter: exporter,

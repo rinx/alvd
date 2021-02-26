@@ -26,11 +26,9 @@ func WithAgentOpts(opts *agent.Opts) OptionFunc {
 	}
 }
 
-func WithAddr(addr string) OptionFunc {
+func WithAddrs(addrs []string) OptionFunc {
 	return func(c *Config) error {
-		if addr != "" {
-			c.Addr = addr
-		}
+		c.Addrs = addrs
 
 		return nil
 	}

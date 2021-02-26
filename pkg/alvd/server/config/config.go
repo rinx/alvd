@@ -11,7 +11,7 @@ type Config struct {
 	AgentEnabled bool
 	AgentOpts    *agent.Opts
 
-	Addr     string
+	Addrs    []string
 	GRPCHost string
 	GRPCPort int
 

@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/rinx/alvd/internal/log"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/label"
 	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/metric/global"
 )
 
 var (
@@ -40,7 +40,7 @@ type Meter interface {
 func Init(interval time.Duration) {
 	once.Do(func() {
 		instance = &meter{
-			meter:    otel.Meter("rinx.github.io/alvd"),
+			meter:    global.Meter("rinx.github.io/alvd"),
 			interval: interval,
 			mch:      make(chan metric.Measurement, 10),
 		}

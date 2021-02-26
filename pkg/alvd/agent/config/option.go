@@ -18,11 +18,9 @@ func WithAgentName(name string) OptionFunc {
 	}
 }
 
-func WithServerAddress(addr string) OptionFunc {
+func WithServerAddresses(addrs []string) OptionFunc {
 	return func(c *Config) error {
-		if addr != "" {
-			c.ServerAddress = addr
-		}
+		c.ServerAddresses = addrs
 
 		return nil
 	}

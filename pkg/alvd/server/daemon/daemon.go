@@ -64,7 +64,7 @@ func New(cfg *config.Config) (Daemon, error) {
 	}
 
 	return &daemon{
-		addr:    cfg.Addr,
+		addr:    cfg.Addrs[0],
 		gateway: g,
 		tunnel:  tun,
 		manager: m,

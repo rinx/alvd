@@ -45,7 +45,7 @@ require (
 	github.com/aws/aws-sdk-go v1.27.0
 	github.com/cespare/xxhash/v2 v2.1.1
 	github.com/fsnotify/fsnotify v1.4.9
-	github.com/go-redis/redis/v8 v8.4.11
+	github.com/go-redis/redis/v8 v8.6.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gocql/gocql v0.0.0-20200131111108-92af2e088537
 	github.com/gocraft/dbr/v2 v2.7.1
@@ -59,29 +59,29 @@ require (
 	github.com/klauspost/compress v0.0.0-00010101000000-000000000000
 	github.com/kpango/fastime v1.0.16
 	github.com/kpango/fuid v0.0.0-20200823100533-287aa95e0641
-	github.com/kpango/gache v1.2.4
-	github.com/kpango/glg v1.5.1
-	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
+	github.com/kpango/gache v1.2.5
+	github.com/kpango/glg v1.5.5
 	github.com/pierrec/lz4/v3 v3.3.2
 	github.com/rancher/remotedialer v0.2.5
 	github.com/scylladb/gocqlx v1.5.0
 	github.com/tensorflow/tensorflow v0.0.0-00010101000000-000000000000
-	github.com/urfave/cli/v2 v2.2.0
+	github.com/urfave/cli/v2 v2.3.0
 	github.com/vdaas/vald v0.0.0-00010101000000-000000000000
-	go.opencensus.io v0.22.6
-	go.opentelemetry.io/otel v0.16.0
-	go.opentelemetry.io/otel/exporters/metric/prometheus v0.16.0
+	go.opencensus.io v0.23.0
+	go.opentelemetry.io/otel v0.17.0
+	go.opentelemetry.io/otel/exporters/metric/prometheus v0.17.0
+	go.opentelemetry.io/otel/metric v0.17.0
 	go.uber.org/automaxprocs v1.4.0
 	go.uber.org/goleak v1.1.10
 	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
-	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c
-	google.golang.org/api v0.38.0
+	golang.org/x/net v0.0.0-20210224082022-3d97a244fca7
+	golang.org/x/sys v0.0.0-20210225134936-a50acf3fe073
+	google.golang.org/api v0.40.0
 	google.golang.org/grpc v1.35.0
 	gopkg.in/yaml.v2 v2.4.0
-	k8s.io/api v0.20.2
-	k8s.io/apimachinery v0.20.2
-	k8s.io/client-go v0.20.2
+	k8s.io/api v0.20.4
+	k8s.io/apimachinery v0.20.4
+	k8s.io/client-go v0.20.4
 	k8s.io/metrics v0.0.0-00010101000000-000000000000
 	sigs.k8s.io/controller-runtime v0.0.0-00010101000000-000000000000
 )

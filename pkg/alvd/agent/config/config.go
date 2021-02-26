@@ -6,7 +6,7 @@ import (
 )
 
 type Config struct {
-	ServerAddress string
+	ServerAddresses []string
 
 	AgentName string
 

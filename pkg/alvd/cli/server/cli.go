@@ -114,7 +114,7 @@ func ToConfig(opts *Opts) (*config.Config, error) {
 	cfg, err := config.New(
 		config.WithAgentEnabled(opts.AgentEnabled),
 		config.WithAgentOpts(opts.Opts),
-		config.WithAddr(opts.ServerAddress),
+		config.WithAddrs(opts.ServerAddresses),
 		config.WithGRPCHost(opts.ServerGRPCHost),
 		config.WithGRPCPort(opts.ServerGRPCPort),
 		config.WithReplicas(opts.Replicas),

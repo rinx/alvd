@@ -13,7 +13,7 @@ import (
 )
 
 type Opts struct {
-	ServerAddress          string
+	ServerAddresses        []string
 	AgentName              string
 	LogLevel               string
 	Dimension              int
@@ -37,10 +37,10 @@ var Flags = []cli.Flag{
 		Value: "",
 		Usage: "agent name (if not specified, uuid will be generated)",
 	},
-	&cli.StringFlag{
+	&cli.StringSliceFlag{
 		Name:  "server",
-		Value: "0.0.0.0:8000",
-		Usage: "alvd server address",
+		Value: cli.NewStringSlice("0.0.0.0:8000"),
+		Usage: "alvd server addresses",
 	},
 	&cli.StringFlag{
 		Name:  "log-level",
@@ -117,7 +117,7 @@ var Flags = []cli.Flag{
 func ParseOpts(c *cli.Context) *Opts {
 	return &Opts{
 		AgentName:              c.String("name"),
-		ServerAddress:          c.String("server"),
+		ServerAddresses:        c.StringSlice("server"),
 		LogLevel:               c.String("log-level"),
 		Dimension:              c.Int("dimension"),
 		DistanceType:           c.String("distance-type"),
@@ -177,7 +177,7 @@ func NewCommand() *cli.Command {
 func ToConfig(opts *Opts) (*config.Config, error) {
 	cfg, err := config.New(
 		config.WithAgentName(opts.AgentName),
-		config.WithServerAddress(opts.ServerAddress),
+		config.WithServerAddresses(opts.ServerAddresses),
 		config.WithDimension(opts.Dimension),
 		config.WithDistanceType(opts.DistanceType),
 		config.WithObjectType(opts.ObjectType),

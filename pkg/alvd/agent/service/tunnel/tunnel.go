@@ -12,40 +12,78 @@ import (
 )
 
 type tunnel struct {
-	*Config
-	cancel context.CancelFunc
-}
+	agentName string
+	agentPort int
 
-type Config struct {
-	ServerAddress string
+	cancel       context.CancelFunc
+	cancelByAddr map[string]context.CancelFunc
 
-	AgentName string
-	AgentPort int
+	connectCh    chan string
+	disconnectCh chan string
 }
 
 type Tunnel interface {
+	Start(ctx context.Context) <-chan error
+	Connect(addr string)
+	Disconnect(addr string)
 	Close()
 }
 
-func Connect(ctx context.Context, cfg *Config) (Tunnel, <-chan error) {
-	ctx, cancel := context.WithCancel(ctx)
-	ech := make(chan error, 1)
-
-	headers := http.Header{
-		"X-ALVD-ID":        []string{cfg.AgentName},
-		"X-ALVD-GRPC-PORT": []string{strconv.Itoa(cfg.AgentPort)},
+func New(name string, port int) Tunnel {
+	return &tunnel{
+		agentName:    name,
+		agentPort:    port,
+		cancelByAddr: make(map[string]context.CancelFunc, 0),
 	}
+}
+
+func (t *tunnel) Start(ctx context.Context) <-chan error {
+	ctx, t.cancel = context.WithCancel(ctx)
+	ech := make(chan error, 1)
+	t.connectCh = make(chan string, 10)
+	t.disconnectCh = make(chan string, 10)
 
 	go func() {
 		defer close(ech)
+		defer close(t.connectCh)
+		defer close(t.disconnectCh)
+		var err error
+		for {
+			select {
+			case <-ctx.Done():
+				err = ctx.Err()
+				if err != nil && err != context.Canceled {
+					log.Errorf("error: %s", err)
+				}
+				return
+			case addr := <-t.connectCh:
+				t.connect(ctx, addr)
+			case addr := <-t.disconnectCh:
+				t.disconnect(ctx, addr)
+			}
+		}
+	}()
+
+	return ech
+}
+
+func (t *tunnel) connect(ctx context.Context, addr string) {
+	ctx, t.cancelByAddr[addr] = context.WithCancel(ctx)
+
+	headers := http.Header{
+		"X-ALVD-ID":        []string{t.agentName},
+		"X-ALVD-GRPC-PORT": []string{strconv.Itoa(t.agentPort)},
+	}
+
+	go func() {
 		for {
 			remotedialer.ClientConnect(
 				ctx,
-				fmt.Sprintf("ws://%s/connect", cfg.ServerAddress),
+				fmt.Sprintf("ws://%s/connect", addr),
 				headers,
 				nil,
 				connectAuthorizer,
-				onConnectFunc(cfg.ServerAddress),
+				onConnectFunc(addr),
 			)
 
 			select {
@@ -59,11 +97,22 @@ func Connect(ctx context.Context, cfg *Config) (Tunnel, <-chan error) {
 			}
 		}
 	}()
+}
 
-	return &tunnel{
-		Config: cfg,
-		cancel: cancel,
-	}, ech
+func (t *tunnel) disconnect(ctx context.Context, addr string) {
+	cancel, ok := t.cancelByAddr[addr]
+	if ok {
+		cancel()
+		delete(t.cancelByAddr, addr)
+	}
+}
+
+func (t *tunnel) Connect(addr string) {
+	t.connectCh <- addr
+}
+
+func (t *tunnel) Disconnect(addr string) {
+	t.disconnectCh <- addr
 }
 
 func (t *tunnel) Close() {

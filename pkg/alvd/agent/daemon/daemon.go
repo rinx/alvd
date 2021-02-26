@@ -16,7 +16,7 @@ import (
 )
 
 type daemon struct {
-	serverAddress string
+	serverAddresses []string
 
 	agentName string
 	grpcPort  int
@@ -65,24 +65,23 @@ func New(cfg *config.Config) (Daemon, error) {
 	}
 
 	return &daemon{
-		serverAddress: cfg.ServerAddress,
-		agentName:     cfg.AgentName,
-		grpcPort:      cfg.GRPCPort,
-		agent:         a,
-		ngt:           ngt,
-		handler:       h,
+		serverAddresses: cfg.ServerAddresses,
+		agentName:       cfg.AgentName,
+		grpcPort:        cfg.GRPCPort,
+		agent:           a,
+		ngt:             ngt,
+		handler:         h,
 	}, nil
 }
 
 func (d *daemon) Start(ctx context.Context) <-chan error {
 	ctx, d.cancel = context.WithCancel(ctx)
 
-	var tunEch <-chan error
-	d.tunnel, tunEch = tunnel.Connect(ctx, &tunnel.Config{
-		ServerAddress: d.serverAddress,
-		AgentName:     d.agentName,
-		AgentPort:     d.grpcPort,
-	})
+	d.tunnel = tunnel.New(d.agentName, d.grpcPort)
+	tunEch := d.tunnel.Start(ctx)
+	for _, addr := range d.serverAddresses {
+		d.tunnel.Connect(addr)
+	}
 
 	nech := d.ngt.Start(ctx)
 	gech := d.agent.Start(ctx)
@@ -90,6 +89,7 @@ func (d *daemon) Start(ctx context.Context) <-chan error {
 	ech := make(chan error, 1)
 
 	go func() {
+		defer close(ech)
 		var err error
 		for {
 			select {
