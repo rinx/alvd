@@ -120,7 +120,7 @@ Current Status
         - Unary APIs and Streaming APIs are supported.
         - MultiXXX APIs are not supported.
 - Currently, it doesn't support high-availability (HA). Only single Server (with one or more Agents) cluster of alvd can be deployed.
-    - In the near future, HA cluster will be supported.
+    - In the near future, HA cluster (Multiple Servers and Multiple Agents) will be supported.
 
 
 Build
