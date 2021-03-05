@@ -57,6 +57,17 @@ func (t *tunnel) Start(ctx context.Context) <-chan error {
 				}
 				return
 			case addr := <-t.connectCh:
+				host, port, err := net.SplitHostPort(addr)
+				if err == nil {
+					ips, err := net.DefaultResolver.LookupIPAddr(ctx, host)
+					if err == nil {
+						for _, ip := range ips {
+							t.connect(ctx, net.JoinHostPort(ip.String(), port))
+						}
+						continue
+					}
+				}
+
 				t.connect(ctx, addr)
 			case addr := <-t.disconnectCh:
 				t.disconnect(ctx, addr)
