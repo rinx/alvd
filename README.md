@@ -104,8 +104,11 @@ $ # create new namespace
 $ kubectl create ns alvd
 $ # change current namespace
 $ kubectl config set-context $(kubectl config current-context) --namespace=alvd
-$ # deploy server and agent
-$ kubectl apply -f k8s
+$ # deploy Servers
+$ kubectl apply -f k8s/server.yaml
+
+$ # after Servers become ready, deploy Agents
+$ kubectl apply -f k8s/agent.yaml
 ```
 
 Current Status
@@ -119,8 +122,10 @@ Current Status
     - Agent has APIs in https://github.com/vdaas/vald/tree/master/apis/proto/v1/vald and https://github.com/vdaas/vald/tree/master/apis/proto/v1/agent/core.
         - Unary APIs and Streaming APIs are supported.
         - MultiXXX APIs are not supported.
-- Currently, it doesn't support high-availability (HA). Only single Server (with one or more Agents) cluster of alvd can be deployed.
-    - In the near future, HA cluster (Multiple Servers and Multiple Agents) will be supported.
+- Currently, high-availability (HA) cluster is partly supported.
+    - Only static IP multiple Servers (+ multiple Agents) can build an alvd HA cluster.
+        - Agents cannot resolve dynamic IPs of Servers.
+    - In the near future, HA cluster will be fully supported.
 
 
 Build

@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/name: alvd
     app.kubernetes.io/component: server
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: alvd-server
