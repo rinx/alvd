@@ -143,7 +143,7 @@ func (d *daemon) registerMetrics() (err error) {
 	_, err = meter.Meter().NewInt64UpDownSumObserver(
 		"rinx.github.io/alvd/agent/ngt/uncommitted",
 		func(_ context.Context, result metric.Int64ObserverResult) {
-			result.Observe(int64(d.ngt.InsertVCacheLen() + d.ngt.DeleteVCacheLen()))
+			result.Observe(int64(d.ngt.InsertVQueueBufferLen() + d.ngt.DeleteVQueueBufferLen()))
 		},
 		metric.WithDescription("NGT number of uncommitted indices"),
 		metric.WithUnit(unit.Dimensionless),

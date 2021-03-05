@@ -1,39 +1,41 @@
 module github.com/rinx/alvd
 
-go 1.15
+go 1.16
 
 replace (
-	cloud.google.com/go => cloud.google.com/go v0.76.0
+	cloud.google.com/go => cloud.google.com/go v0.78.0
 	github.com/Azure/go-autorest => github.com/Azure/go-autorest v14.2.0+incompatible
-	github.com/aws/aws-sdk-go => github.com/aws/aws-sdk-go v1.37.3
+	github.com/aws/aws-sdk-go => github.com/aws/aws-sdk-go v1.37.22
 	github.com/boltdb/bolt => github.com/boltdb/bolt v1.3.1
 	github.com/chzyer/logex => github.com/chzyer/logex v1.1.11-0.20170329064859-445be9e134b2
 	github.com/coreos/etcd => go.etcd.io/etcd v3.3.25+incompatible
-	github.com/docker/docker => github.com/moby/moby v20.10.3+incompatible
+	github.com/docker/docker => github.com/moby/moby v20.10.5+incompatible
 	github.com/envoyproxy/protoc-gen-validate => github.com/envoyproxy/protoc-gen-validate v0.4.1
+	github.com/go-redis/redis/v8 => github.com/go-redis/redis/v8 v8.6.1-0.20210304063416-097b94a7973f
 	github.com/go-sql-driver/mysql => github.com/go-sql-driver/mysql v1.5.0
-	github.com/gocql/gocql => github.com/gocql/gocql v0.0.0-20210129204804-4364a4b9cfdd
+	github.com/gocql/gocql => github.com/gocql/gocql v0.0.0-20210301062520-a04dba85ed25
 	github.com/gogo/googleapis => github.com/gogo/googleapis v1.4.0
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
 	github.com/google/go-cmp => github.com/google/go-cmp v0.5.4
-	github.com/google/pprof => github.com/google/pprof v0.0.0-20210125172800-10e9aeb4a998
+	github.com/google/pprof => github.com/google/pprof v0.0.0-20210226084205-cbba55b83ad5
 	github.com/googleapis/gnostic => github.com/googleapis/gnostic v0.5.4
-	github.com/gophercloud/gophercloud => github.com/gophercloud/gophercloud v0.15.0
+	github.com/gophercloud/gophercloud => github.com/gophercloud/gophercloud v0.16.0
 	github.com/gorilla/websocket => github.com/gorilla/websocket v1.4.2
-	github.com/hailocab/go-hostpool => github.com/monzo/go-hostpool v0.0.0-20200724120130-287edbb29340
-	github.com/klauspost/compress => github.com/klauspost/compress v1.11.8-0.20210203154158-6c96f3e2a592
+	github.com/hailocab/go-hostpool => github.com/kpango/go-hostpool v0.0.0-20210303030322-aab80263dcd0
+	github.com/klauspost/compress => github.com/klauspost/compress v1.11.10-0.20210302113407-0d78ef07f573
+	github.com/kpango/glg => github.com/kpango/glg v1.5.1
 	github.com/tensorflow/tensorflow => github.com/tensorflow/tensorflow v2.1.2+incompatible
 	github.com/vdaas/vald => ./vald
-	golang.org/x/crypto => golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
-	google.golang.org/grpc => google.golang.org/grpc v1.35.0
+	golang.org/x/crypto => golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
+	google.golang.org/grpc => google.golang.org/grpc v1.36.0
 	google.golang.org/protobuf => google.golang.org/protobuf v1.25.0
-	k8s.io/api => k8s.io/api v0.20.2
-	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.20.2
-	k8s.io/apimachinery => k8s.io/apimachinery v0.20.2
-	k8s.io/cli-runtime => k8s.io/cli-runtime v0.20.2
-	k8s.io/client-go => k8s.io/client-go v0.20.2
-	k8s.io/metrics => k8s.io/metrics v0.20.2
-	sigs.k8s.io/controller-runtime => sigs.k8s.io/controller-runtime v0.8.1
+	k8s.io/api => k8s.io/api v0.20.4
+	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.20.4
+	k8s.io/apimachinery => k8s.io/apimachinery v0.20.4
+	k8s.io/cli-runtime => k8s.io/cli-runtime v0.20.4
+	k8s.io/client-go => k8s.io/client-go v0.20.4
+	k8s.io/metrics => k8s.io/metrics v0.20.4
+	sigs.k8s.io/controller-runtime => sigs.k8s.io/controller-runtime v0.8.2
 )
 
 require (
@@ -60,7 +62,7 @@ require (
 	github.com/kpango/fastime v1.0.16
 	github.com/kpango/fuid v0.0.0-20200823100533-287aa95e0641
 	github.com/kpango/gache v1.2.5
-	github.com/kpango/glg v1.5.5
+	github.com/kpango/glg v1.5.4
 	github.com/pierrec/lz4/v3 v3.3.2
 	github.com/rancher/remotedialer v0.2.5
 	github.com/scylladb/gocqlx v1.5.0
@@ -68,14 +70,14 @@ require (
 	github.com/urfave/cli/v2 v2.3.0
 	github.com/vdaas/vald v0.0.0-00010101000000-000000000000
 	go.opencensus.io v0.23.0
-	go.opentelemetry.io/otel v0.17.0
-	go.opentelemetry.io/otel/exporters/metric/prometheus v0.17.0
-	go.opentelemetry.io/otel/metric v0.17.0
+	go.opentelemetry.io/otel v0.18.0
+	go.opentelemetry.io/otel/exporters/metric/prometheus v0.18.0
+	go.opentelemetry.io/otel/metric v0.18.0
 	go.uber.org/automaxprocs v1.4.0
 	go.uber.org/goleak v1.1.10
 	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20210224082022-3d97a244fca7
-	golang.org/x/sys v0.0.0-20210225134936-a50acf3fe073
+	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
+	golang.org/x/sys v0.0.0-20210304203840-7b4935edff86
 	google.golang.org/api v0.40.0
 	google.golang.org/grpc v1.35.0
 	gopkg.in/yaml.v2 v2.4.0

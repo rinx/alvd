@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/rinx/alvd/internal/log"
-	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/metric/global"
 )
@@ -23,7 +23,7 @@ type meter struct {
 
 	interval time.Duration
 
-	ls []label.KeyValue
+	ls []attribute.KeyValue
 	ms []metric.Measurement
 
 	collectorsMu sync.RWMutex

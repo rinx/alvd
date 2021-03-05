@@ -829,7 +829,7 @@ func (s *server) CreateAndSaveIndex(ctx context.Context, c *payload.Control_Crea
 func (s *server) IndexInfo(ctx context.Context, _ *payload.Empty) (res *payload.Info_Index_Count, err error) {
 	return &payload.Info_Index_Count{
 		Stored:      uint32(s.ngt.Len()),
-		Uncommitted: uint32(s.ngt.InsertVCacheLen()),
+		Uncommitted: uint32(s.ngt.InsertVQueueBufferLen() + s.ngt.DeleteVQueueBufferLen()),
 		Indexing:    s.ngt.IsIndexing(),
 	}, nil
 }
