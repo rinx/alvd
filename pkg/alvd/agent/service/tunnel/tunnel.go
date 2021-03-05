@@ -57,17 +57,6 @@ func (t *tunnel) Start(ctx context.Context) <-chan error {
 				}
 				return
 			case addr := <-t.connectCh:
-				host, port, err := net.SplitHostPort(addr)
-				if err == nil {
-					ips, err := net.DefaultResolver.LookupIPAddr(ctx, host)
-					if err == nil {
-						for _, ip := range ips {
-							t.connect(ctx, net.JoinHostPort(ip.String(), port))
-						}
-						continue
-					}
-				}
-
 				t.connect(ctx, addr)
 			case addr := <-t.disconnectCh:
 				t.disconnect(ctx, addr)
@@ -86,7 +75,7 @@ func (t *tunnel) connect(ctx context.Context, addr string) {
 		"X-ALVD-GRPC-PORT": []string{strconv.Itoa(t.agentPort)},
 	}
 
-	go func() {
+	dispatch := func(addr string) {
 		for {
 			remotedialer.ClientConnect(
 				ctx,
@@ -107,7 +96,21 @@ func (t *tunnel) connect(ctx context.Context, addr string) {
 			default:
 			}
 		}
-	}()
+	}
+
+	host, port, err := net.SplitHostPort(addr)
+	if err == nil {
+		ips, err := net.DefaultResolver.LookupIPAddr(ctx, host)
+		if err == nil {
+			for _, ip := range ips {
+				go dispatch(net.JoinHostPort(ip.String(), port))
+			}
+
+			return
+		}
+	}
+
+	go dispatch(addr)
 }
 
 func (t *tunnel) disconnect(ctx context.Context, addr string) {
