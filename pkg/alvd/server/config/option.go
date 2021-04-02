@@ -80,3 +80,11 @@ func WithCreateIndexThreshold(n uint) OptionFunc {
 		return nil
 	}
 }
+
+func WithEgressFilterLuaFilePath(path string) OptionFunc {
+	return func(c *Config) error {
+		c.EgressFilterLuaFilePath = path
+
+		return nil
+	}
+}
