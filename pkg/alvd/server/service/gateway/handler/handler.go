@@ -148,7 +148,12 @@ func (s *server) Search(
 			if s.egressFilter != nil {
 				filtered, err := s.egressFilter(res.Results)
 				if err == nil {
-					res.Results = filtered
+					res.Results = make([]*payload.Object_Distance, 0, len(filtered))
+					for _, r := range filtered {
+						if r != nil {
+							res.Results = append(res.Results, r)
+						}
+					}
 				}
 			}
 
