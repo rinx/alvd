@@ -9,7 +9,7 @@ alvd - A Lightweight Vald
 A lightweight distributed vector search engine based on [Vald](https://vald.vdaas.org) codebase.
 
 - works without Kubernetes
-- single binary (less than 20MB)
+- single binary (less than 30MB)
 - easy to run (can be configured by command-line options)
 - consists of Agent and Server
     - alvd has almost same features that Vald's gateway-lb + discoverer and agent-ngt have.
