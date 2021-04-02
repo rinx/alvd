@@ -139,7 +139,7 @@ Just running
 License
 ---
 
-alvd is distributed under Apache 2.0 license, same as Vald.
+Same as Vald, alvd is distributed under Apache 2.0 license. (Partially distributed under Mozilla Public License 2.0)
 
 alvd depends on Vald codebase, the files came from Vald (such as `internal`, `pkg/vald`. They are downloaded when running `make` command.) are excluded from my license and ownership.
 
