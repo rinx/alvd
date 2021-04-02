@@ -39,22 +39,22 @@ replace (
 )
 
 require (
-	cloud.google.com/go v0.74.0
+	cloud.google.com/go v0.79.0
 	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
 	contrib.go.opencensus.io/exporter/jaeger v0.2.1
-	contrib.go.opencensus.io/exporter/prometheus v0.2.0
+	contrib.go.opencensus.io/exporter/prometheus v0.3.0
 	contrib.go.opencensus.io/exporter/stackdriver v0.13.5
-	github.com/aws/aws-sdk-go v1.27.0
+	github.com/aws/aws-sdk-go v1.32.1
 	github.com/cespare/xxhash/v2 v2.1.1
 	github.com/fsnotify/fsnotify v1.4.9
-	github.com/go-redis/redis/v8 v8.6.0
+	github.com/go-redis/redis/v8 v8.7.1
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gocql/gocql v0.0.0-20200131111108-92af2e088537
 	github.com/gocraft/dbr/v2 v2.7.1
 	github.com/gogo/googleapis v0.0.0-20180223154316-0cd9801be74a
-	github.com/gogo/protobuf v1.3.1
+	github.com/gogo/protobuf v1.3.2
 	github.com/gogo/status v1.1.0
-	github.com/google/go-cmp v0.5.4
+	github.com/google/go-cmp v0.5.5
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/go-version v1.2.1
 	github.com/json-iterator/go v1.1.10
@@ -68,7 +68,9 @@ require (
 	github.com/scylladb/gocqlx v1.5.0
 	github.com/tensorflow/tensorflow v0.0.0-00010101000000-000000000000
 	github.com/urfave/cli/v2 v2.3.0
+	github.com/vadv/gopher-lua-libs v0.1.2
 	github.com/vdaas/vald v0.0.0-00010101000000-000000000000
+	github.com/yuin/gopher-lua v0.0.0-20200603152657-dc2b0ca8b37e
 	go.opencensus.io v0.23.0
 	go.opentelemetry.io/otel v0.18.0
 	go.opentelemetry.io/otel/exporters/metric/prometheus v0.18.0
@@ -76,14 +78,15 @@ require (
 	go.uber.org/automaxprocs v1.4.0
 	go.uber.org/goleak v1.1.10
 	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
-	golang.org/x/sys v0.0.0-20210304203840-7b4935edff86
-	google.golang.org/api v0.40.0
-	google.golang.org/grpc v1.35.0
+	golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4
+	golang.org/x/sys v0.0.0-20210316164454-77fc1eacc6aa
+	google.golang.org/api v0.42.0
+	google.golang.org/grpc v1.36.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.20.4
 	k8s.io/apimachinery v0.20.4
 	k8s.io/client-go v0.20.4
 	k8s.io/metrics v0.0.0-00010101000000-000000000000
+	layeh.com/gopher-luar v1.0.8
 	sigs.k8s.io/controller-runtime v0.0.0-00010101000000-000000000000
 )

@@ -21,16 +21,29 @@ const (
 	defaultTimeout = 3 * time.Second
 )
 
+type EgressFilter = func([]*payload.Object_Distance) ([]*payload.Object_Distance, error)
+
 type server struct {
 	manager    manager.Manager
 	numReplica int
+
+	egressFilter EgressFilter
 }
 
-func New(man manager.Manager, replicas int) vald.Server {
+type Server interface {
+	vald.Server
+	RegisterEgressFilter(ef EgressFilter)
+}
+
+func New(man manager.Manager, replicas int) Server {
 	return &server{
 		manager:    man,
 		numReplica: replicas,
 	}
+}
+
+func (s *server) RegisterEgressFilter(ef EgressFilter) {
+	s.egressFilter = ef
 }
 
 func (s *server) Exists(
@@ -130,6 +143,13 @@ func (s *server) Search(
 			close(dch)
 			if num != 0 && len(res.GetResults()) > num {
 				res.Results = res.Results[:num]
+			}
+
+			if s.egressFilter != nil {
+				filtered, err := s.egressFilter(res.Results)
+				if err == nil {
+					res.Results = filtered
+				}
 			}
 
 			return res, nil

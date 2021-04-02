@@ -23,6 +23,8 @@ type Opts struct {
 	CheckIndexInterval   string
 	CreateIndexThreshold uint
 
+	EgressFilterLuaFilePath string
+
 	*agent.Opts
 }
 
@@ -57,17 +59,23 @@ var Flags = []cli.Flag{
 		Value: 100,
 		Usage: "number of data to trigger create index",
 	},
+	&cli.StringFlag{
+		Name:  "egress-filter-lua-filepath",
+		Value: "",
+		Usage: "lua filepath of egress filter",
+	},
 }
 
 func ParseOpts(c *cli.Context) *Opts {
 	return &Opts{
-		AgentEnabled:         c.Bool("agent"),
-		ServerGRPCHost:       c.String("server-grpc-host"),
-		ServerGRPCPort:       c.Uint("server-grpc-port"),
-		Replicas:             c.Uint("replicas"),
-		CheckIndexInterval:   c.String("check-index-interval"),
-		CreateIndexThreshold: c.Uint("create-index-threshold"),
-		Opts:                 agent.ParseOpts(c),
+		AgentEnabled:            c.Bool("agent"),
+		ServerGRPCHost:          c.String("server-grpc-host"),
+		ServerGRPCPort:          c.Uint("server-grpc-port"),
+		Replicas:                c.Uint("replicas"),
+		CheckIndexInterval:      c.String("check-index-interval"),
+		CreateIndexThreshold:    c.Uint("create-index-threshold"),
+		EgressFilterLuaFilePath: c.String("egress-filter-lua-filepath"),
+		Opts:                    agent.ParseOpts(c),
 	}
 }
 
@@ -120,6 +128,7 @@ func ToConfig(opts *Opts) (*config.Config, error) {
 		config.WithReplicas(opts.Replicas),
 		config.WithCheckIndexInterval(opts.CheckIndexInterval),
 		config.WithCreateIndexThreshold(opts.CreateIndexThreshold),
+		config.WithEgressFilterLuaFilePath(opts.EgressFilterLuaFilePath),
 	)
 	if err != nil {
 		return nil, err

@@ -18,6 +18,8 @@ type Config struct {
 	Replicas             int
 	CheckIndexInterval   time.Duration
 	CreateIndexThreshold int
+
+	EgressFilterLuaFilePath string
 }
 
 func New(opts ...OptionFunc) (*Config, error) {

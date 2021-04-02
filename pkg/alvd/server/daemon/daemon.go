@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rinx/alvd/internal/log"
+	"github.com/rinx/alvd/pkg/alvd/extension/lua/filter"
 	"github.com/rinx/alvd/pkg/alvd/observability/metrics"
 	"github.com/rinx/alvd/pkg/alvd/server/config"
 	"github.com/rinx/alvd/pkg/alvd/server/service/gateway"
@@ -57,6 +58,19 @@ func New(cfg *config.Config) (Daemon, error) {
 	}
 
 	h := handler.New(m, cfg.Replicas)
+
+	if cfg.EgressFilterLuaFilePath != "" {
+		ef, err := filter.NewEgressFilter(cfg.EgressFilterLuaFilePath)
+		if err != nil {
+			log.Errorf(
+				"failed to initialize egress filter: %s, lua script: %s",
+				err,
+				cfg.EgressFilterLuaFilePath,
+			)
+		} else {
+			h.RegisterEgressFilter(ef.Do)
+		}
+	}
 
 	g, err := gateway.New(h, cfg.GRPCHost, cfg.GRPCPort)
 	if err != nil {
