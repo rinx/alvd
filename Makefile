@@ -2,13 +2,16 @@ ORG = rinx
 ALTORG = ghcr.io/rinx
 REPO = alvd
 
+VERSION ?= unknown
+
 VALD_DIR = vald
 VALD_REPO = vdaas/vald
 VALD_BRANCH = master
 VALD_DEPTH = 1
 
-NGT_VERSION=1.13.1
+NGT_VERSION = 1.13.1
 
+GO_VERSION = $(shell go version)
 GOARCH = $(shell go env GOARCH)
 
 ifeq ($(GOARCH),amd64)
@@ -67,7 +70,8 @@ docker/build/noavx:
 	    $(DOCKER_OPTS) \
 	    -t $(ORG)/$(REPO):$(NOAVX_TAG) \
 	    -t $(ALTORG)/$(REPO):$(NOAVX_TAG) . \
-	    --build-arg NGT_BUILD_OPTIONS="-DNGT_AVX_DISABLED=ON"
+	    --build-arg NGT_BUILD_OPTIONS="-DNGT_AVX_DISABLED=ON" \
+	    --build-arg VERSION="$(VERSION)"
 
 .PHONY: docker/build/avx2/name
 docker/build/avx2/name:
@@ -83,7 +87,8 @@ docker/build/avx2:
 	    $(DOCKER_OPTS) \
 	    -t $(ORG)/$(REPO):$(AVX2_TAG) \
 	    -t $(ALTORG)/$(REPO):$(AVX2_TAG) . \
-	    --build-arg NGT_BUILD_OPTIONS=""
+	    --build-arg NGT_BUILD_OPTIONS="" \
+	    --build-arg VERSION="$(VERSION)"
 
 cmd/alvd/alvd: \
 	ngt/install \
@@ -97,7 +102,10 @@ cmd/alvd/alvd: \
 	    && export CGO_LDFLAGS="-g -Ofast -march=native" \
 	    && go build \
 	    --ldflags "-s -w -linkmode 'external' \
-	    -extldflags '-static -fPIC -pthread -fopenmp -std=c++17 -lstdc++ -lm $(EXTLDFLAGS)'" \
+	    -extldflags '-static -fPIC -pthread -fopenmp -std=c++17 -lstdc++ -lm $(EXTLDFLAGS)' \
+		-X 'main.Version=$(VERSION)' \
+		-X 'main.GoVersion=$(GO_VERSION)' \
+		-X 'main.NGTVersion=$(NGT_VERSION)'" \
 	    -a \
 	    -tags "cgo netgo" \
 	    -trimpath \

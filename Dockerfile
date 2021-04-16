@@ -4,9 +4,11 @@ ARG DISTROLESS_IMAGE=gcr.io/distroless/static
 ARG DISTROLESS_IMAGE_TAG=nonroot
 
 ARG NGT_BUILD_OPTIONS="-DNGT_AVX_DISABLED=ON"
+ARG VERSION="unknown"
 
 FROM golang:${GO_VERSION} AS builder
 ARG NGT_BUILD_OPTIONS
+ARG VERSION
 
 ENV ORG rinx
 ENV REPO alvd
@@ -37,7 +39,7 @@ WORKDIR ${GOPATH}/src/github.com/${ORG}/${REPO}
 COPY Makefile .
 
 RUN make NGT_BUILD_OPTIONS="${NGT_BUILD_OPTIONS}" ngt/install
-RUN make cmd/alvd/alvd \
+RUN make VERSION="${VERSION}" cmd/alvd/alvd \
     && cp cmd/alvd/alvd /alvd
 
 FROM ${DISTROLESS_IMAGE}:${DISTROLESS_IMAGE_TAG}
