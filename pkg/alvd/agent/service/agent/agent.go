@@ -10,6 +10,7 @@ import (
 	"github.com/vdaas/vald/apis/grpc/v1/agent/core"
 	"github.com/vdaas/vald/apis/grpc/v1/vald"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 type agent struct {
@@ -64,6 +65,7 @@ func (a *agent) startGRPCServer(ctx context.Context) <-chan error {
 	server := grpc.NewServer()
 	core.RegisterAgentServer(server, a.handler)
 	vald.RegisterValdServer(server, a.handler)
+	reflection.Register(server)
 
 	go func() {
 		defer close(ech)

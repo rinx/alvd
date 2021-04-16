@@ -8,6 +8,7 @@ import (
 	"github.com/rinx/alvd/internal/log"
 	"github.com/vdaas/vald/apis/grpc/v1/vald"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 type gateway struct {
@@ -61,6 +62,7 @@ func (g *gateway) startGRPCServer(ctx context.Context) <-chan error {
 
 	server := grpc.NewServer()
 	vald.RegisterValdServer(server, g.handler)
+	reflection.Register(server)
 
 	go func() {
 		defer close(ech)
