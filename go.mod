@@ -81,6 +81,7 @@ require (
 	google.golang.org/api v0.44.0
 	google.golang.org/grpc v1.36.1
 	gopkg.in/yaml.v2 v2.4.0
+	inet.af/netaddr v0.0.0-20210414225854-daf4c9bcf1f9 // indirect
 	k8s.io/api v0.20.5
 	k8s.io/apimachinery v0.20.5
 	k8s.io/client-go v0.20.5
