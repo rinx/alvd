@@ -16,6 +16,7 @@ A lightweight distributed vector search engine based on [Vald](https://vald.vdaa
 
 alvd is highly inspired by [k3s](https://k3s.io) project.
 
+[![Grafana dashboard](./assets/dashboard.png)](./assets/dashboard.png)
 
 Rationale
 ---
@@ -135,6 +136,8 @@ $ curl http://localhost:9090/metrics
 $ curl http://localhost:9091/metrics
 ...
 ```
+
+In the `docker-compose.yml` file, there're definitions of Prometheus and Grafana services. If they are enabled, a metrics dashboard can be displayed on your machine.
 
 Running on Kubernetes
 ---
