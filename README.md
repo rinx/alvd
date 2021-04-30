@@ -16,14 +16,6 @@ A lightweight distributed vector search engine based on [Vald](https://vald.vdaa
 
 alvd is highly inspired by [k3s](https://k3s.io) project.
 
-<div align="center">
-<a href="./assets/howitworks.svg">
-<img src="./assets/howitworks.svg" width="100%">
-</a>
-</div>
-
-[![Grafana dashboard](./assets/dashboard.png)](./assets/dashboard.png)
-
 Rationale
 ---
 
@@ -43,6 +35,15 @@ By using [rancher/remotedialer](https://github.com/rancher/remotedialer), Vald's
 Also we eliminated advanced options and adopt command-line options for configuring the application behavior instead of YAML files.
 
 As stated above, alvd is focused on "easy to use", "Kubernetes-less" and "less components".
+
+How it works
+---
+
+<div align="center">
+<a href="./assets/howitworks.svg">
+<img src="./assets/howitworks.svg" width="100%">
+</a>
+</div>
 
 Quick Start
 ---
@@ -143,7 +144,9 @@ $ curl http://localhost:9091/metrics
 ...
 ```
 
-In the `docker-compose.yml` file, there're definitions of Prometheus and Grafana services. If they are enabled, a metrics dashboard can be displayed on your machine.
+In the `docker-compose.yml` file, there're definitions of Prometheus and Grafana services. If they are enabled, a metrics dashboard can be displayed on your machine. (http://localhost:3000)
+
+[![Grafana dashboard](./assets/dashboard.png)](./assets/dashboard.png)
 
 Running on Kubernetes
 ---
