@@ -1,0 +1,49 @@
+version: "3.8"
+services:
+  alvd-server:
+    image: ghcr.io/rinx/alvd:noavx
+    # image: ghcr.io/rinx/alvd:avx2
+    container_name: alvd-server
+    command:
+      - "server"
+      - "--agent=false"
+      - "--replicas=2"
+      - "--dimension=784"
+      - "--distance-type=l2"
+      - "--object-type=float"
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+  alvd-agent-1:
+    image: ghcr.io/rinx/alvd:noavx
+    container_name: alvd-agent-1
+    command:
+      - "agent"
+      - "--server=alvd-server:8000"
+      - "--dimension=784"
+      - "--distance-type=l2"
+      - "--object-type=float"
+    ports:
+      - "9091:9090"
+  alvd-agent-2:
+    image: ghcr.io/rinx/alvd:noavx
+    container_name: alvd-agent-2
+    command:
+      - "agent"
+      - "--server=alvd-server:8000"
+      - "--dimension=784"
+      - "--distance-type=l2"
+      - "--object-type=float"
+    ports:
+      - "9092:9090"
+  alvd-agent-3:
+    image: ghcr.io/rinx/alvd:noavx
+    container_name: alvd-agent-3
+    command:
+      - "agent"
+      - "--server=alvd-server:8000"
+      - "--dimension=784"
+      - "--distance-type=l2"
+      - "--object-type=float"
+    ports:
+      - "9093:9090"
