@@ -1,3 +1,7 @@
+<div align="center">
+<img src="./assets/cover.svg" width="100%">
+</div>
+
 alvd - A Lightweight Vald
 ===
 
@@ -146,7 +150,7 @@ $ curl http://localhost:9091/metrics
 
 In the `docker-compose.yml` file, there're definitions of Prometheus and Grafana services. If they are enabled, a metrics dashboard can be displayed on your machine. (http://localhost:3000)
 
-[![Grafana dashboard](./assets/dashboard.png)](./assets/dashboard.png)
+[![Grafana dashboard](https://user-images.githubusercontent.com/1588935/116655813-a7470400-a9c6-11eb-9482-ed6f9369fba2.png)](https://user-images.githubusercontent.com/1588935/116655813-a7470400-a9c6-11eb-9482-ed6f9369fba2.png)
 
 Running on Kubernetes
 ---
