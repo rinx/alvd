@@ -16,7 +16,11 @@ A lightweight distributed vector search engine based on [Vald](https://vald.vdaa
 
 alvd is highly inspired by [k3s](https://k3s.io) project.
 
-[![How it works](./assets/howitworks.svg)](./assets/howitworks.svg)
+<div align="center">
+<a href="./assets/howitworks.svg">
+<img src="./assets/howitworks.svg" width="100%">
+</a>
+</div>
 
 [![Grafana dashboard](./assets/dashboard.png)](./assets/dashboard.png)
 
