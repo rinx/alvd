@@ -8,6 +8,6 @@ highlight_code = true
 highlight_theme = "base16-ocean-light"
 
 [extra]
-logo = "https://raw.githubusercontent.com/rinx/alvd/main/assets/cover.svg"
+# logo = "https://raw.githubusercontent.com/rinx/alvd/main/assets/cover.svg"
 release = "https://api.github.com/repos/rinx/alvd/releases/latest"
 # favicon = "https://www.getzola.org/favicon.ico"
