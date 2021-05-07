@@ -1,0 +1,13 @@
+base_url = "https://alvd.netlify.com"
+title = "alvd Docs"
+compile_sass = true
+build_search_index = true
+
+[markdown]
+highlight_code = true
+highlight_theme = "base16-ocean-light"
+
+[extra]
+logo = "https://raw.githubusercontent.com/rinx/alvd/main/assets/cover.svg"
+release = "https://api.github.com/repos/rinx/alvd/releases/latest"
+# favicon = "https://www.getzola.org/favicon.ico"
