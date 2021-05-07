@@ -23,8 +23,14 @@ type filter struct {
 	proto *lua.FunctionProto
 }
 
+type RetryConfig struct {
+	Enabled           bool
+	MaxRetries        int
+	NextNumMultiplier int
+}
+
 type EgressFilter interface {
-	Do([]*payload.Object_Distance) ([]*payload.Object_Distance, error)
+	Do(origin []*payload.Object_Distance) (results []*payload.Object_Distance, retry *RetryConfig, err error)
 }
 
 func NewEgressFilter(filePath string) (EgressFilter, error) {
@@ -60,22 +66,28 @@ func CompileLua(filePath string) (*lua.FunctionProto, error) {
 	return proto, nil
 }
 
-func (f *filter) Do(origin []*payload.Object_Distance) (results []*payload.Object_Distance, err error) {
+func (f *filter) Do(origin []*payload.Object_Distance) (results []*payload.Object_Distance, retry *RetryConfig, err error) {
 	state := lua.NewState()
 	defer state.Close()
 
 	libs.Preload(state)
 
 	results = origin
+	retry = &RetryConfig{
+		Enabled:           false,
+		MaxRetries:        3,
+		NextNumMultiplier: 2,
+	}
 
 	state.SetGlobal("results", luar.New(state, results))
+	state.SetGlobal("retry", luar.New(state, retry))
 
 	fn := state.NewFunctionFromProto(f.proto)
 	state.Push(fn)
 	err = state.PCall(0, lua.MultRet, nil)
 	if err != nil {
-		return origin, err
+		return origin, retry, err
 	}
 
-	return results, nil
+	return results, retry, nil
 }

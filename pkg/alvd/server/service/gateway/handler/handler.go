@@ -10,8 +10,10 @@ import (
 	"time"
 
 	"github.com/rinx/alvd/internal/errors"
+	"github.com/rinx/alvd/internal/log"
 	"github.com/rinx/alvd/internal/net/grpc/codes"
 	"github.com/rinx/alvd/internal/net/grpc/status"
+	"github.com/rinx/alvd/pkg/alvd/extension/lua/filter"
 	"github.com/rinx/alvd/pkg/alvd/server/service/manager"
 	"github.com/vdaas/vald/apis/grpc/v1/payload"
 	"github.com/vdaas/vald/apis/grpc/v1/vald"
@@ -21,7 +23,7 @@ const (
 	defaultTimeout = 3 * time.Second
 )
 
-type EgressFilter = func([]*payload.Object_Distance) ([]*payload.Object_Distance, error)
+type EgressFilter = func([]*payload.Object_Distance) ([]*payload.Object_Distance, *filter.RetryConfig, error)
 
 type server struct {
 	manager    manager.Manager
@@ -79,6 +81,59 @@ func (s *server) Exists(
 }
 
 func (s *server) Search(
+	ctx context.Context,
+	req *payload.Search_Request,
+) (res *payload.Search_Response, err error) {
+	cfg := req.GetConfig()
+	num := int(cfg.GetNum())
+
+	for i := 0; i < 50; i++ {
+		res, err = s.search(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+
+		if s.egressFilter == nil {
+			break
+		}
+
+		filtered, retry, err := s.egressFilter(res.Results)
+		if err != nil {
+			log.Warnf("an error occurred while egress filtering: %s", err)
+			break
+		}
+
+		res.Results = make([]*payload.Object_Distance, 0, len(filtered))
+		for _, r := range filtered {
+			if r != nil {
+				res.Results = append(res.Results, r)
+			}
+		}
+
+		if !retry.Enabled || i >= retry.MaxRetries || len(res.Results) >= num {
+			break
+		}
+
+		req = &payload.Search_Request{
+			Vector: req.GetVector(),
+			Config: &payload.Search_Config{
+				RequestId: req.GetConfig().GetRequestId(),
+				Num:       req.GetConfig().GetNum() * uint32(retry.NextNumMultiplier),
+				Radius:    req.GetConfig().GetRadius(),
+				Epsilon:   req.GetConfig().GetEpsilon(),
+				Timeout:   req.GetConfig().GetTimeout(),
+			},
+		}
+	}
+
+	if num != 0 && len(res.GetResults()) > num {
+		res.Results = res.Results[:num]
+	}
+
+	return res, err
+}
+
+func (s *server) search(
 	ctx context.Context,
 	req *payload.Search_Request,
 ) (res *payload.Search_Response, err error) {
@@ -143,18 +198,6 @@ func (s *server) Search(
 			close(dch)
 			if num != 0 && len(res.GetResults()) > num {
 				res.Results = res.Results[:num]
-			}
-
-			if s.egressFilter != nil {
-				filtered, err := s.egressFilter(res.Results)
-				if err == nil {
-					res.Results = make([]*payload.Object_Distance, 0, len(filtered))
-					for _, r := range filtered {
-						if r != nil {
-							res.Results = append(res.Results, r)
-						}
-					}
-				}
 			}
 
 			return res, nil

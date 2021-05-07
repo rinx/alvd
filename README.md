@@ -172,7 +172,7 @@ $ kubectl apply -f k8s/agent.yaml
 Egress filter feature
 ---
 
-alvd has an egress filter feature (filtering, sorting, translating, etc...) that is extensible by using Lua scripts.
+alvd has an egress filter (= post filter) feature (filtering, sorting, translating, etc...) that is extensible by using Lua scripts.
 
 To enable it, run alvd server by passing a path to the Lua scripts.
 
