@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/rinx/alvd/pkg/alvd/cli/agent"
+	"github.com/rinx/alvd/pkg/alvd/extension/lua"
 )
 
 type OptionFunc func(c *Config) error
@@ -81,9 +82,9 @@ func WithCreateIndexThreshold(n uint) OptionFunc {
 	}
 }
 
-func WithEgressFilterLuaFilePath(path string) OptionFunc {
+func WithEgressFilter(filter *lua.LFunction) OptionFunc {
 	return func(c *Config) error {
-		c.EgressFilterLuaFilePath = path
+		c.EgressFilter = filter
 
 		return nil
 	}

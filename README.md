@@ -169,14 +169,21 @@ $ # after Servers become ready, deploy Agents
 $ kubectl apply -f k8s/agent.yaml
 ```
 
-Egress filter feature
+Lua based config
 ---
+
+Instead of using command-line flags, alvd can be configured by using a Lua based config file.
+Thare's an example Lua file at [examples/config/config.lua](examples/config/config.lua).
+
+    $ ./alvd server --config=examples/config/config.lua
+
+### Egress filter feature
 
 alvd has an egress filter (= post filter) feature (filtering, sorting, translating, etc...) that is extensible by using Lua scripts.
 
 To enable it, run alvd server by passing a path to the Lua scripts.
 
-    $ ./alvd server --egress-filter-lua-filepath=examples/egress-filter/sort.lua
+    $ ./alvd server --config=examples/egress-filter/sort.lua
 
 There're various types of examples of filters are available in [examples/egress-filter](examples/egress-filter) directory.
 
@@ -202,8 +209,6 @@ Current Status
 
 Build
 ---
-
-Just running
 
     $ make cmd/alvd/alvd
 

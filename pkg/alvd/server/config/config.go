@@ -5,6 +5,7 @@ import (
 
 	"github.com/rinx/alvd/internal/log"
 	"github.com/rinx/alvd/pkg/alvd/cli/agent"
+	"github.com/rinx/alvd/pkg/alvd/extension/lua"
 )
 
 type Config struct {
@@ -19,7 +20,7 @@ type Config struct {
 	CheckIndexInterval   time.Duration
 	CreateIndexThreshold int
 
-	EgressFilterLuaFilePath string
+	EgressFilter *lua.LFunction
 }
 
 func New(opts ...OptionFunc) (*Config, error) {
