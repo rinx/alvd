@@ -33,7 +33,34 @@ func New(opts ...OptionFunc) (*Config, error) {
 }
 
 func newNGTConfig() *valdconfig.NGT {
-	cfg := &valdconfig.NGT{}
+	cfg := &valdconfig.NGT{
+		IndexPath:               "",
+		Dimension:               784,
+		BulkInsertChunkSize:     10,
+		DistanceType:            "l2",
+		ObjectType:              "float",
+		CreationEdgeSize:        20,
+		SearchEdgeSize:          10,
+		AutoIndexDurationLimit:  "24h",
+		AutoIndexCheckDuration:  "30m",
+		AutoSaveIndexDuration:   "31m",
+		AutoIndexLength:         100,
+		InitialDelayMaxDuration: "30s",
+		EnableInMemoryMode:      true,
+		DefaultPoolSize:         10000,
+		DefaultRadius:           -1.0,
+		DefaultEpsilon:          0.1,
+		MinLoadIndexTimeout:     "3m",
+		MaxLoadIndexTimeout:     "10m",
+		LoadIndexTimeoutFactor:  "1ms",
+		EnableProactiveGC:       true,
+		VQueue: &valdconfig.VQueue{
+			InsertBufferSize:     100,
+			InsertBufferPoolSize: 100,
+			DeleteBufferSize:     10000,
+			DeleteBufferPoolSize: 5000,
+		},
+	}
 
 	cfg.Bind()
 

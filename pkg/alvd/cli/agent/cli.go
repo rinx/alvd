@@ -7,6 +7,7 @@ import (
 	"github.com/rinx/alvd/internal/log/level"
 	"github.com/rinx/alvd/pkg/alvd/agent/config"
 	"github.com/rinx/alvd/pkg/alvd/agent/runner"
+	"github.com/rinx/alvd/pkg/alvd/extension/lua"
 	"github.com/rinx/alvd/pkg/alvd/observability"
 
 	cli "github.com/urfave/cli/v2"
@@ -32,6 +33,11 @@ type Opts struct {
 }
 
 var Flags = []cli.Flag{
+	&cli.StringFlag{
+		Name:  "config",
+		Value: "",
+		Usage: "path to the config Lua file.",
+	},
 	&cli.StringFlag{
 		Name:  "name",
 		Value: "",
@@ -114,6 +120,19 @@ var Flags = []cli.Flag{
 	},
 }
 
+func ParseConfig(c *cli.Context) (*Opts, error) {
+	opts := ParseOpts(c)
+
+	if config := c.String("config"); config != "" {
+		err := lua.MapConfig(config, "agent", opts)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return opts, nil
+}
+
 func ParseOpts(c *cli.Context) *Opts {
 	return &Opts{
 		AgentName:              c.String("name"),
@@ -141,7 +160,10 @@ func NewCommand() *cli.Command {
 		Usage: "Start agent",
 		Flags: Flags,
 		Action: func(c *cli.Context) error {
-			opts := ParseOpts(c)
+			opts, err := ParseConfig(c)
+			if err != nil {
+				return err
+			}
 
 			log.Init(log.WithLevel(level.Atol(opts.LogLevel).String()))
 			log.Info("start alvd agent")

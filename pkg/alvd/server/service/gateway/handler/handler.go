@@ -13,7 +13,7 @@ import (
 	"github.com/rinx/alvd/internal/log"
 	"github.com/rinx/alvd/internal/net/grpc/codes"
 	"github.com/rinx/alvd/internal/net/grpc/status"
-	"github.com/rinx/alvd/pkg/alvd/extension/lua/filter"
+	"github.com/rinx/alvd/pkg/alvd/extension/lua"
 	"github.com/rinx/alvd/pkg/alvd/server/service/manager"
 	"github.com/vdaas/vald/apis/grpc/v1/payload"
 	"github.com/vdaas/vald/apis/grpc/v1/vald"
@@ -23,7 +23,11 @@ const (
 	defaultTimeout = 3 * time.Second
 )
 
-type EgressFilter = func([]*payload.Object_Distance) ([]*payload.Object_Distance, *filter.RetryConfig, error)
+type EgressFilter = func([]*payload.Object_Distance) (
+	[]*payload.Object_Distance,
+	*lua.FilterRetryConfig,
+	error,
+)
 
 type server struct {
 	manager    manager.Manager
