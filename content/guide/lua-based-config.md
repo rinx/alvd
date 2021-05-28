@@ -3,8 +3,15 @@ title = "Egress filter"
 weight = 50
 +++
 
-Egress filter feature
+Lua based config
 ---
+
+Instead of using command-line flags, alvd can be configured by using a Lua based config file.
+Thare's an example Lua file at [examples/config/config.lua](https://github.com/rinx/alvd/tree/main/examples/config/config.lua).
+
+    $ ./alvd server --config=examples/config/config.lua
+
+### Egress filter feature
 
 alvd has an egress filter (= post filter) feature (filtering, sorting, translating, etc...) that is extensible by using Lua scripts.
 
