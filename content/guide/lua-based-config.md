@@ -1,5 +1,5 @@
 +++
-title = "Egress filter"
+title = "Lua based config"
 weight = 50
 +++
 
