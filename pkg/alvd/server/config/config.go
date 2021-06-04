@@ -21,6 +21,7 @@ type Config struct {
 	CreateIndexThreshold int
 
 	SearchResultInterceptor *lua.LFunction
+	InsertDataInterceptor   *lua.LFunction
 }
 
 func New(opts ...OptionFunc) (*Config, error) {

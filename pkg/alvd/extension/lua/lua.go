@@ -102,3 +102,36 @@ func NewSearchResultInterceptorFn(sri *LFunction) SearchResultInterceptor {
 		return results, retry, nil
 	}
 }
+
+type InsertDataInterceptor = func(*payload.Insert_Request) (
+	*payload.Insert_Request,
+	error,
+)
+
+func NewInsertDataInterceptorFn(idi *LFunction) InsertDataInterceptor {
+	return func(origin *payload.Insert_Request) (
+		req *payload.Insert_Request,
+		err error,
+	) {
+		state := lua.NewState()
+		defer state.Close()
+
+		libs.Preload(state)
+
+		req = origin
+
+		err = state.CallByParam(
+			lua.P{
+				Fn:      idi,
+				NRet:    0,
+				Protect: true,
+			},
+			luar.New(state, req),
+		)
+		if err != nil {
+			return origin, err
+		}
+
+		return req, nil
+	}
+}

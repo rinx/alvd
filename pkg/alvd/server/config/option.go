@@ -82,9 +82,17 @@ func WithCreateIndexThreshold(n uint) OptionFunc {
 	}
 }
 
-func WithSearchResultInterceptor(filter *lua.LFunction) OptionFunc {
+func WithSearchResultInterceptor(sri *lua.LFunction) OptionFunc {
 	return func(c *Config) error {
-		c.SearchResultInterceptor = filter
+		c.SearchResultInterceptor = sri
+
+		return nil
+	}
+}
+
+func WithInsertDataInterceptor(idi *lua.LFunction) OptionFunc {
+	return func(c *Config) error {
+		c.InsertDataInterceptor = idi
 
 		return nil
 	}

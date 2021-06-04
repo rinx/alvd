@@ -65,6 +65,12 @@ func New(cfg *config.Config) (Daemon, error) {
 		)
 	}
 
+	if cfg.InsertDataInterceptor != nil {
+		h.RegisterInsertDataInterceptor(
+			lua.NewInsertDataInterceptorFn(cfg.InsertDataInterceptor),
+		)
+	}
+
 	g, err := gateway.New(h, cfg.GRPCHost, cfg.GRPCPort)
 	if err != nil {
 		return nil, err

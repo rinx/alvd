@@ -54,4 +54,8 @@ server = {
       )
     end
   end,
+
+  insert_data_interceptor = function (request)
+    print(string.format("Inserting ID: %s", request.Vector.Id))
+  end,
 }

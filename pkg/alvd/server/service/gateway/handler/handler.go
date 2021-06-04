@@ -28,11 +28,13 @@ type server struct {
 	numReplica int
 
 	searchResultInterceptor lua.SearchResultInterceptor
+	insertDataInterceptor   lua.InsertDataInterceptor
 }
 
 type Server interface {
 	vald.Server
 	RegisterSearchResultInterceptor(sri lua.SearchResultInterceptor)
+	RegisterInsertDataInterceptor(idi lua.InsertDataInterceptor)
 }
 
 func New(man manager.Manager, replicas int) Server {
@@ -44,6 +46,10 @@ func New(man manager.Manager, replicas int) Server {
 
 func (s *server) RegisterSearchResultInterceptor(sri lua.SearchResultInterceptor) {
 	s.searchResultInterceptor = sri
+}
+
+func (s *server) RegisterInsertDataInterceptor(idi lua.InsertDataInterceptor) {
+	s.insertDataInterceptor = idi
 }
 
 func (s *server) Exists(
@@ -448,6 +454,13 @@ func (s *server) Insert(
 	ctx context.Context,
 	req *payload.Insert_Request,
 ) (ce *payload.Object_Location, err error) {
+	if s.insertDataInterceptor != nil {
+		req, err = s.insertDataInterceptor(req)
+		if err != nil {
+			log.Warnf("an error occurred while using insert data interceptor: %s", err)
+		}
+	}
+
 	mu := sync.Mutex{}
 	ce = &payload.Object_Location{
 		Uuid: req.GetVector().GetId(),
