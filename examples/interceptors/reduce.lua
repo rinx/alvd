@@ -1,5 +1,5 @@
 server = {
-  search_result_interceptor = function (results, retry)
+  search_result_interceptor = function (config, results, retry)
     local remains = {}
     for i, r in results() do
       -- remove elements by distances

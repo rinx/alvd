@@ -55,14 +55,20 @@ type RetryConfig struct {
 	NextNumMultiplier int
 }
 
-type SearchResultInterceptor = func([]*payload.Object_Distance) (
+type SearchResultInterceptor = func(
+	*payload.Search_Config,
+	[]*payload.Object_Distance,
+) (
 	[]*payload.Object_Distance,
 	*RetryConfig,
 	error,
 )
 
 func NewSearchResultInterceptorFn(sri *LFunction) SearchResultInterceptor {
-	return func(origin []*payload.Object_Distance) (
+	return func(
+		cfg *payload.Search_Config,
+		origin []*payload.Object_Distance,
+	) (
 		results []*payload.Object_Distance,
 		retry *RetryConfig,
 		err error,
@@ -85,6 +91,7 @@ func NewSearchResultInterceptorFn(sri *LFunction) SearchResultInterceptor {
 				NRet:    0,
 				Protect: true,
 			},
+			luar.New(state, cfg),
 			luar.New(state, results),
 			luar.New(state, retry),
 		)

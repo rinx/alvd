@@ -3,7 +3,7 @@ local json = require("json")
 local time = require("time")
 
 server = {
-  search_result_interceptor = function (results, retry)
+  search_result_interceptor = function (config, results, retry)
     for i, r in results() do
       results[i].Id = json.encode(
         {

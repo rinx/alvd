@@ -1,5 +1,5 @@
 server = {
-  search_result_interceptor = function (results, retry)
+  search_result_interceptor = function (config, results, retry)
     -- if `retry.Enabled` is true, retry ANN search when the number of `results` is lower than the required number.
     retry.Enabled = true
     -- `retry.MaxRetries` represents maximum number of retries.

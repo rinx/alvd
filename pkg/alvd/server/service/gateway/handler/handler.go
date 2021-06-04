@@ -95,9 +95,9 @@ func (s *server) Search(
 			break
 		}
 
-		filtered, retry, err := s.searchResultInterceptor(res.Results)
+		filtered, retry, err := s.searchResultInterceptor(cfg, res.Results)
 		if err != nil {
-			log.Warnf("an error occurred while egress filtering: %s", err)
+			log.Warnf("an error occurred while using search result interceptor: %s", err)
 			break
 		}
 

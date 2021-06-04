@@ -38,7 +38,10 @@ server = {
   -- server-side Search Result Interceptor
   -- it can be used for post-filtering, sorting,
   -- translating or modifying search results.
-  search_result_interceptor = function (results, retry)
+  search_result_interceptor = function (config, results, retry)
+    -- config: search config
+    -- results: returned search results
+    -- retry: retry config
     for i, r in results() do
       results[i].Id = json.encode(
         {

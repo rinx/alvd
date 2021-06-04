@@ -1,5 +1,5 @@
 server = {
-  search_result_interceptor = function (results, retry)
+  search_result_interceptor = function (config, results, retry)
     local sorter = {}
     for i, r in results() do
       sorter[i] = r
