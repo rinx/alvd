@@ -184,7 +184,7 @@ $ ./alvd server --config=examples/config/config.lua
 alvd has interceptor features (filtering, sorting, translating, etc...) that is extensible by using Lua scripts.  
 To enable them, run alvd server by passing a path to the Lua scripts.
 
-    $ ./alvd server --config=examples/intercpetors/sort.lua
+    $ ./alvd server --config=examples/interceptors/sort.lua
 
 There're various types of examples of interceptors are available in [examples/interceptors](examples/interceptors) directory.
 
