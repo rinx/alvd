@@ -90,6 +90,14 @@ func WithSearchResultInterceptor(sri *lua.LFunction) OptionFunc {
 	}
 }
 
+func WithSearchQueryInterceptor(sqi *lua.LFunction) OptionFunc {
+	return func(c *Config) error {
+		c.SearchQueryInterceptor = sqi
+
+		return nil
+	}
+}
+
 func WithInsertDataInterceptor(idi *lua.LFunction) OptionFunc {
 	return func(c *Config) error {
 		c.InsertDataInterceptor = idi

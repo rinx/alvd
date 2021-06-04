@@ -21,6 +21,7 @@ type Config struct {
 	CreateIndexThreshold int
 
 	SearchResultInterceptor *lua.LFunction
+	SearchQueryInterceptor *lua.LFunction
 	InsertDataInterceptor   *lua.LFunction
 }
 

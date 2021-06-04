@@ -32,7 +32,8 @@ type Opts struct {
 	CreateIndexThreshold uint
 
 	SearchResultInterceptor *lua.LFunction
-	InsertDataInterceptor *lua.LFunction
+	SearchQueryInterceptor  *lua.LFunction
+	InsertDataInterceptor   *lua.LFunction
 }
 
 var Flags = []cli.Flag{
@@ -155,6 +156,7 @@ func ToConfig(opts *Opts, agentOpts *agent.Opts) (*config.Config, error) {
 		config.WithCheckIndexInterval(opts.CheckIndexInterval),
 		config.WithCreateIndexThreshold(opts.CreateIndexThreshold),
 		config.WithSearchResultInterceptor(opts.SearchResultInterceptor),
+		config.WithSearchQueryInterceptor(opts.SearchQueryInterceptor),
 		config.WithInsertDataInterceptor(opts.InsertDataInterceptor),
 	)
 	if err != nil {

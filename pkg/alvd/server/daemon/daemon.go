@@ -65,6 +65,12 @@ func New(cfg *config.Config) (Daemon, error) {
 		)
 	}
 
+	if cfg.SearchQueryInterceptor != nil {
+		h.RegisterSearchQueryInterceptor(
+			lua.NewSearchQueryInterceptorFn(cfg.SearchQueryInterceptor),
+		)
+	}
+
 	if cfg.InsertDataInterceptor != nil {
 		h.RegisterInsertDataInterceptor(
 			lua.NewInsertDataInterceptorFn(cfg.InsertDataInterceptor),

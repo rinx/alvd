@@ -55,7 +55,13 @@ server = {
     end
   end,
 
+  -- server-side Search Query Interceptor
+  search_query_interceptor = function (request)
+    -- print(string.format("Searching top %d neighbors", request.Config.Num))
+  end,
+
+  -- server-side Insert Data Interceptor
   insert_data_interceptor = function (request)
-    print(string.format("Inserting ID: %s", request.Vector.Id))
+    -- print(string.format("Inserting ID: %s", request.Vector.Id))
   end,
 }

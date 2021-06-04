@@ -28,12 +28,14 @@ type server struct {
 	numReplica int
 
 	searchResultInterceptor lua.SearchResultInterceptor
+	searchQueryInterceptor  lua.SearchQueryInterceptor
 	insertDataInterceptor   lua.InsertDataInterceptor
 }
 
 type Server interface {
 	vald.Server
 	RegisterSearchResultInterceptor(sri lua.SearchResultInterceptor)
+	RegisterSearchQueryInterceptor(sri lua.SearchQueryInterceptor)
 	RegisterInsertDataInterceptor(idi lua.InsertDataInterceptor)
 }
 
@@ -46,6 +48,10 @@ func New(man manager.Manager, replicas int) Server {
 
 func (s *server) RegisterSearchResultInterceptor(sri lua.SearchResultInterceptor) {
 	s.searchResultInterceptor = sri
+}
+
+func (s *server) RegisterSearchQueryInterceptor(sqi lua.SearchQueryInterceptor) {
+	s.searchQueryInterceptor = sqi
 }
 
 func (s *server) RegisterInsertDataInterceptor(idi lua.InsertDataInterceptor) {
@@ -88,6 +94,13 @@ func (s *server) Search(
 	ctx context.Context,
 	req *payload.Search_Request,
 ) (res *payload.Search_Response, err error) {
+	if s.searchQueryInterceptor != nil {
+		req, err = s.searchQueryInterceptor(req)
+		if err != nil {
+			log.Warnf("an error occurred while using search query interceptor: %s", err)
+		}
+	}
+
 	cfg := req.GetConfig()
 	num := int(cfg.GetNum())
 
