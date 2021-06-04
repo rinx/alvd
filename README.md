@@ -186,7 +186,7 @@ To enable them, run alvd server by passing a path to the Lua scripts.
 
     $ ./alvd server --config=examples/interceptors/sort.lua
 
-There're various types of examples of interceptors are available in [examples/interceptors](examples/interceptors) directory.
+There're various types of examples of interceptors are available in [examples/interceptors](examples/interceptors) directory and [examples/config/config.lua](examples/config/config.lua).
 
 This feature is powered by [yuin/gopher-lua](https://github.com/yuin/gopher-lua) and [vadv/gopher-lua-libs](https://github.com/vadv/gopher-lua-libs).
 

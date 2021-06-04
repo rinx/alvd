@@ -1,3 +1,5 @@
+-- modules in gopher-lua-libs are available in Lua scripts.
+-- https://github.com/vadv/gopher-lua-libs
 local json = require("json")
 local time = require("time")
 
