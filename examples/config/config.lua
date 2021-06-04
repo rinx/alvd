@@ -65,5 +65,6 @@ server = {
   -- server-side Insert Data Interceptor
   insert_data_interceptor = function (request)
     -- print(string.format("Inserting ID: %s", request.Vector.Id))
+    request.Config.Timestamp = time.unix()
   end,
 }
