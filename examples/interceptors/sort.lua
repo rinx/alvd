@@ -1,5 +1,5 @@
 server = {
-  egress_filter = function (results, retry)
+  search_result_interceptor = function (results, retry)
     local sorter = {}
     for i, r in results() do
       sorter[i] = r

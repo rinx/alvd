@@ -59,9 +59,9 @@ func New(cfg *config.Config) (Daemon, error) {
 
 	h := handler.New(m, cfg.Replicas)
 
-	if cfg.EgressFilter != nil {
-		h.RegisterEgressFilter(
-			lua.NewFilter(cfg.EgressFilter).EgressFiltering,
+	if cfg.SearchResultInterceptor != nil {
+		h.RegisterSearchResultInterceptor(
+			lua.NewSearchResultInterceptorFn(cfg.SearchResultInterceptor),
 		)
 	}
 

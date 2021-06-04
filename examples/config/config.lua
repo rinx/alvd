@@ -35,7 +35,10 @@ server = {
   check_index_interval = "10s",
   create_index_threshold = 1000,
 
-  egress_filter = function (results, retry)
+  -- server-side Search Result Interceptor
+  -- it can be used for post-filtering, sorting,
+  -- translating or modifying search results.
+  search_result_interceptor = function (results, retry)
     for i, r in results() do
       results[i].Id = json.encode(
         {

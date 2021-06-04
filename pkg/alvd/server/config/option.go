@@ -82,9 +82,9 @@ func WithCreateIndexThreshold(n uint) OptionFunc {
 	}
 }
 
-func WithEgressFilter(filter *lua.LFunction) OptionFunc {
+func WithSearchResultInterceptor(filter *lua.LFunction) OptionFunc {
 	return func(c *Config) error {
-		c.EgressFilter = filter
+		c.SearchResultInterceptor = filter
 
 		return nil
 	}

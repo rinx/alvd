@@ -20,7 +20,7 @@ type Config struct {
 	CheckIndexInterval   time.Duration
 	CreateIndexThreshold int
 
-	EgressFilter *lua.LFunction
+	SearchResultInterceptor *lua.LFunction
 }
 
 func New(opts ...OptionFunc) (*Config, error) {

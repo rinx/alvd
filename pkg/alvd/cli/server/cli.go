@@ -31,7 +31,7 @@ type Opts struct {
 	CheckIndexInterval   string
 	CreateIndexThreshold uint
 
-	EgressFilter *lua.LFunction
+	SearchResultInterceptor *lua.LFunction
 }
 
 var Flags = []cli.Flag{
@@ -153,7 +153,7 @@ func ToConfig(opts *Opts, agentOpts *agent.Opts) (*config.Config, error) {
 		config.WithReplicas(opts.Replicas),
 		config.WithCheckIndexInterval(opts.CheckIndexInterval),
 		config.WithCreateIndexThreshold(opts.CreateIndexThreshold),
-		config.WithEgressFilter(opts.EgressFilter),
+		config.WithSearchResultInterceptor(opts.SearchResultInterceptor),
 	)
 	if err != nil {
 		return nil, err

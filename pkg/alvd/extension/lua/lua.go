@@ -49,59 +49,49 @@ func MapConfig(filePath, varname string, st interface{}) error {
 	return gluamapper.Map(table, st)
 }
 
-type filter struct {
-	egressFilter *LFunction
-}
-
-type FilterRetryConfig struct {
+type RetryConfig struct {
 	Enabled           bool
 	MaxRetries        int
 	NextNumMultiplier int
 }
 
-type Filter interface {
-	EgressFiltering(origin []*payload.Object_Distance) (
+type SearchResultInterceptor = func([]*payload.Object_Distance) (
+	[]*payload.Object_Distance,
+	*RetryConfig,
+	error,
+)
+
+func NewSearchResultInterceptorFn(sri *LFunction) SearchResultInterceptor {
+	return func(origin []*payload.Object_Distance) (
 		results []*payload.Object_Distance,
-		retry *FilterRetryConfig,
+		retry *RetryConfig,
 		err error,
-	)
-}
+	) {
+		state := lua.NewState()
+		defer state.Close()
 
-func NewFilter(egressFilter *LFunction) Filter {
-	return &filter{
-		egressFilter: egressFilter,
+		libs.Preload(state)
+
+		results = origin
+		retry = &RetryConfig{
+			Enabled:           false,
+			MaxRetries:        3,
+			NextNumMultiplier: 2,
+		}
+
+		err = state.CallByParam(
+			lua.P{
+				Fn:      sri,
+				NRet:    0,
+				Protect: true,
+			},
+			luar.New(state, results),
+			luar.New(state, retry),
+		)
+		if err != nil {
+			return origin, retry, err
+		}
+
+		return results, retry, nil
 	}
-}
-
-func (f *filter) EgressFiltering(origin []*payload.Object_Distance) (
-	results []*payload.Object_Distance,
-	retry *FilterRetryConfig,
-	err error,
-) {
-	state := lua.NewState()
-	defer state.Close()
-
-	libs.Preload(state)
-
-	results = origin
-	retry = &FilterRetryConfig{
-		Enabled:           false,
-		MaxRetries:        3,
-		NextNumMultiplier: 2,
-	}
-
-	err = state.CallByParam(
-		lua.P{
-			Fn:      f.egressFilter,
-			NRet:    0,
-			Protect: true,
-		},
-		luar.New(state, results),
-		luar.New(state, retry),
-	)
-	if err != nil {
-		return origin, retry, err
-	}
-
-	return results, retry, nil
 }

@@ -23,22 +23,16 @@ const (
 	defaultTimeout = 3 * time.Second
 )
 
-type EgressFilter = func([]*payload.Object_Distance) (
-	[]*payload.Object_Distance,
-	*lua.FilterRetryConfig,
-	error,
-)
-
 type server struct {
 	manager    manager.Manager
 	numReplica int
 
-	egressFilter EgressFilter
+	searchResultInterceptor lua.SearchResultInterceptor
 }
 
 type Server interface {
 	vald.Server
-	RegisterEgressFilter(ef EgressFilter)
+	RegisterSearchResultInterceptor(sri lua.SearchResultInterceptor)
 }
 
 func New(man manager.Manager, replicas int) Server {
@@ -48,8 +42,8 @@ func New(man manager.Manager, replicas int) Server {
 	}
 }
 
-func (s *server) RegisterEgressFilter(ef EgressFilter) {
-	s.egressFilter = ef
+func (s *server) RegisterSearchResultInterceptor(sri lua.SearchResultInterceptor) {
+	s.searchResultInterceptor = sri
 }
 
 func (s *server) Exists(
@@ -97,11 +91,11 @@ func (s *server) Search(
 			return nil, err
 		}
 
-		if s.egressFilter == nil {
+		if s.searchResultInterceptor == nil {
 			break
 		}
 
-		filtered, retry, err := s.egressFilter(res.Results)
+		filtered, retry, err := s.searchResultInterceptor(res.Results)
 		if err != nil {
 			log.Warnf("an error occurred while egress filtering: %s", err)
 			break
